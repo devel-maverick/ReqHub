@@ -16,30 +16,53 @@ model User {
 
   requests  ApiRequest[]
 }
-
 model ApiRequest {
-  id        Int         @id @default(autoincrement())
-  method    String
-  url       String
-  headers   Json
-  body      Json?
-  createdAt DateTime    @default(now())
-
+  id        Int      @id @default(autoincrement())
   userId    Int
-  user      User        @relation(fields: [userId], references: [id])
 
-  response  ApiResponse?
-}
+  /* ======================
+     REQUEST SIDE
+  ====================== */
 
-model ApiResponse {
-  id          Int      @id @default(autoincrement())
-  status      Int
-  headers     Json
-  body        Json
-  time        Int
-  size        Int
-  createdAt   DateTime @default(now())
+  method    String            // GET, POST, PUT...
+  url       String            // Full URL
 
-  requestId   Int      @unique
-  request     ApiRequest @relation(fields: [requestId], references: [id])
+  /* Params tab */
+  params    Json?             // ?key=value pairs
+
+  /* Headers tab */
+  headers   Json              // Request headers
+
+  /* Authorization tab */
+  authType  String?           // none | bearer | basic | apiKey
+  authData  Json?             // token / username / apiKey data
+
+  /* Body tab */
+  bodyType  String?           // none | raw | form-data | binary
+  body      Json?             // raw JSON / form fields
+  rawText   String?           // for raw text / XML
+  binaryRef String?           // filename or path (optional)
+
+  /* ======================
+     RESPONSE SIDE
+  ====================== */
+
+  status     Int
+  resHeaders Json
+  resBody    Json?
+  resText    String?          // raw / non-JSON responses
+
+  cookies    Json?            // response cookies
+
+  timeMs     Int
+  sizeBytes  Int
+
+  /* ======================
+     META
+  ====================== */
+
+  isStarred  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user       User     @relation(fields: [userId], references: [id])
 }
