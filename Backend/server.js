@@ -1,10 +1,9 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import proxyRoute from "./src/routes/proxy.js";
 import cookieParser from "cookie-parser";
 import authRoutes from "./src/routes/auth.js";
-
+import requestRoutes from "./src/routes/request.js";
 dotenv.config();
 
 const app = express();
@@ -16,7 +15,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use("/api/auth", authRoutes);
 
-app.use("/api/request", proxyRoute);
+app.use("/api/request", requestRoutes);
 const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`Backend running on http://localhost:${PORT}`);
