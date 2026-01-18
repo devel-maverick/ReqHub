@@ -23,8 +23,10 @@ router.post("/register", async (req, res) => {
   });
 
   if (existingUser) {
-    return res.status(400).json({ message: "User already exists" });
-  }
+  return res.status(400).json({
+    message: `Account already exists via ${existingUser.provider}`,
+  });
+}
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -51,16 +53,13 @@ router.post("/register", async (req, res) => {
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
-  const user = await prisma.user.findUnique({
-    where: { email },
-  });
+  const user = await prisma.user.findUnique({ where: { email } });
 
-  if (!user || !user.password) {
+  if (!user || user.provider !== "local") {
     return res.status(400).json({ message: "Invalid credentials" });
   }
 
   const isValid = await bcrypt.compare(password, user.password);
-
   if (!isValid) {
     return res.status(400).json({ message: "Invalid credentials" });
   }
@@ -72,6 +71,7 @@ router.post("/login", async (req, res) => {
     user: { id: user.id, email: user.email },
   });
 });
+
 
 /* =========================
    CURRENT USER
@@ -148,66 +148,93 @@ router.get("/google/callback", async (req, res) => {
 
   generateToken(user.id, res);
 
-  res.redirect(process.env.FRONTEND_URL);
+  res.redirect(`${process.env.FRONTEND_URL}/tester`);
+;
 });
 
 /* =========================
    GITHUB OAUTH
 ========================= */
+
 router.get("/github", (req, res) => {
   const url =
     "https://github.com/login/oauth/authorize?" +
     new URLSearchParams({
       client_id: process.env.GITHUB_CLIENT_ID,
       redirect_uri: process.env.GITHUB_CALLBACK_URL,
-      scope: "user:email",
+      scope: "read:user user:email",
     });
 
   res.redirect(url);
 });
-
 router.get("/github/callback", async (req, res) => {
-  const { code } = req.query;
+  try {
+    const { code } = req.query;
 
-  const tokenRes = await axios.post(
-    "https://github.com/login/oauth/access_token",
-    {
-      client_id: process.env.GITHUB_CLIENT_ID,
-      client_secret: process.env.GITHUB_CLIENT_SECRET,
-      code,
-      redirect_uri: process.env.GITHUB_CALLBACK_URL,
-    },
-    { headers: { Accept: "application/json" } }
-  );
+    const tokenRes = await axios.post(
+      "https://github.com/login/oauth/access_token",
+      {
+        client_id: process.env.GITHUB_CLIENT_ID,
+        client_secret: process.env.GITHUB_CLIENT_SECRET,
+        code,
+        redirect_uri: process.env.GITHUB_CALLBACK_URL,
+      },
+      { headers: { Accept: "application/json" } }
+    );
 
-  const { access_token } = tokenRes.data;
+    const access_token = tokenRes.data.access_token;
+    if (!access_token) {
+      return res.status(400).json({ message: "GitHub token failed" });
+    }
 
-  const profileRes = await axios.get("https://api.github.com/user", {
-    headers: { Authorization: `Bearer ${access_token}` },
-  });
-
-  const emailRes = await axios.get("https://api.github.com/user/emails", {
-    headers: { Authorization: `Bearer ${access_token}` },
-  });
-
-  const primaryEmail = emailRes.data.find(e => e.primary)?.email;
-  const email = primaryEmail || `${profileRes.data.login}@github.com`;
-
-  let user = await prisma.user.findUnique({ where: { email } });
-
-  if (!user) {
-    user = await prisma.user.create({
-      data: {
-        email,
-        name: profileRes.data.name || profileRes.data.login,
-        provider: "github",
+    const profileRes = await axios.get("https://api.github.com/user", {
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+        "User-Agent": "ReqHub",
+        Accept: "application/vnd.github+json",
       },
     });
+
+    const githubUser = profileRes.data;
+
+    // ✅ SAFE EMAIL STRATEGY (NO 403 EVER)
+    const email =
+      githubUser.email ||
+      `${githubUser.login}@users.noreply.github.com`;
+
+    let user = await prisma.user.findUnique({ where: { email } });
+
+    if (!user) {
+      user = await prisma.user.create({
+        data: {
+          email,
+          name: githubUser.name || githubUser.login,
+          provider: "github",
+        },
+      });
+    }
+
+    generateToken(user.id, res);
+
+    res.redirect(process.env.FRONTEND_URL + "/tester");
+  } catch (err) {
+    console.error("GitHub OAuth Error:", err.response?.data || err.message);
+    res.status(500).json({ message: "GitHub OAuth failed" });
   }
-
-  generateToken(user.id, res);
-
-  res.redirect(process.env.FRONTEND_URL);
 });
+
+/* =========================
+   LOGOUT
+========================= */
+router.post("/logout", (req, res) => {
+  res.clearCookie("token", {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+  });
+
+  res.json({ message: "Logged out successfully" });
+});
+
 
 export default router;
