@@ -8,9 +8,6 @@ import { generateToken } from "../lib/utils.js";
 
 const router = express.Router();
 
-/* =========================
-   LOCAL REGISTER
-========================= */
 router.post("/register", async (req, res) => {
   const { name, email, password } = req.body;
 
@@ -47,9 +44,7 @@ router.post("/register", async (req, res) => {
   });
 });
 
-/* =========================
-   LOCAL LOGIN
-========================= */
+
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
@@ -73,9 +68,6 @@ router.post("/login", async (req, res) => {
 });
 
 
-/* =========================
-   CURRENT USER
-========================= */
 router.get("/me", requireAuth, async (req, res) => {
   const user = await prisma.user.findUnique({
     where: { id: req.user.id },
@@ -91,9 +83,7 @@ router.get("/me", requireAuth, async (req, res) => {
   res.json(user);
 });
 
-/* =========================
-   GOOGLE OAUTH
-========================= */
+
 router.get("/google", (req, res) => {
   const url =
     "https://accounts.google.com/o/oauth2/v2/auth?" +
@@ -152,9 +142,6 @@ router.get("/google/callback", async (req, res) => {
 ;
 });
 
-/* =========================
-   GITHUB OAUTH
-========================= */
 
 router.get("/github", (req, res) => {
   const url =
@@ -196,8 +183,6 @@ router.get("/github/callback", async (req, res) => {
     });
 
     const githubUser = profileRes.data;
-
-    // ✅ SAFE EMAIL STRATEGY (NO 403 EVER)
     const email =
       githubUser.email ||
       `${githubUser.login}@users.noreply.github.com`;
@@ -223,9 +208,7 @@ router.get("/github/callback", async (req, res) => {
   }
 });
 
-/* =========================
-   LOGOUT
-========================= */
+
 router.post("/logout", (req, res) => {
   res.clearCookie("token", {
     httpOnly: true,
