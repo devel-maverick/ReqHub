@@ -4,10 +4,6 @@ import { requireAuth } from "../middleware/authmiddleware.js";
 
 const router = express.Router();
 
-/*
- PATCH /api/request/star/:id
- Toggle star for a request
-*/
 router.patch("/star/:id", requireAuth, async (req, res) => {
   const requestId = Number(req.params.id);
 

@@ -24,16 +24,13 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 
-// Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/request", requestRoutes);
 app.use("/api/history", historyRoutes);
 app.use("/api/request", starRoutes);
 
-// 🔥 CREATE HTTP SERVER
 const server = http.createServer(app);
 
-// 🔥 ATTACH WEBSOCKET SERVER
 setupWebSocket(server);
 
 const PORT = 3000;

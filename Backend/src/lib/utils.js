@@ -1,9 +1,5 @@
 import jwt from "jsonwebtoken";
 
-/*
- Centralized JWT + cookie logic
- Works for local auth + Google + GitHub OAuth
-*/
 
 export const generateToken = (userId, res) => {
   const JWT_SECRET = process.env.JWT_SECRET;
@@ -23,7 +19,7 @@ export const generateToken = (userId, res) => {
     httpOnly: true,
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     sameSite: isProduction ? "None" : "Lax",
-    secure: isProduction, // false on localhost
+    secure: isProduction,
     path: "/",
   });
 

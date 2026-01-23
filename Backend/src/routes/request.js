@@ -28,19 +28,15 @@ router.post("/", requireAuth, async (req, res) => {
   }
 
   try {
-    /* ======================
-       PREPARE REQUEST
-    ====================== */
 
     const axiosConfig = {
       method,
       url,
       params,
       headers,
-      validateStatus: () => true, // do not throw on 4xx/5xx
+      validateStatus: () => true,
     };
 
-    // Body handling
     if (["POST", "PUT", "PATCH"].includes(method)) {
       if (bodyType === "raw") {
         axiosConfig.data = rawText;
@@ -63,9 +59,7 @@ router.post("/", requireAuth, async (req, res) => {
       };
     }
 
-    /* ======================
-       SEND REQUEST
-    ====================== */
+
 
     const startTime = Date.now();
     const response = await axios(axiosConfig);
@@ -81,9 +75,7 @@ router.post("/", requireAuth, async (req, res) => {
       "utf8"
     );
 
-    /* ======================
-       SAVE TO DATABASE
-    ====================== */
+
 
     const savedRequest = await prisma.apiRequest.create({
       data: {
@@ -112,9 +104,6 @@ router.post("/", requireAuth, async (req, res) => {
       },
     });
 
-    /* ======================
-       RETURN RESPONSE
-    ====================== */
 
     res.json({
       id: savedRequest.id,

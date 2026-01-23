@@ -1,11 +1,6 @@
 import WebSocket, { WebSocketServer } from "ws";
 import url from "url";
 
-/*
-  This creates a WebSocket proxy:
-  Client -> ReqHub -> External WS
-*/
-
 export function setupWebSocket(server) {
   const wss = new WebSocketServer({ noServer: true });
 
@@ -36,8 +31,6 @@ export function setupWebSocket(server) {
 
     // Connect to actual WebSocket API
     const targetWs = new WebSocket(targetUrl);
-
-    /* ===== PIPE MESSAGES ===== */
 
     // From target -> client
     targetWs.on("message", (msg) => {
