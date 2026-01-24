@@ -27,7 +27,7 @@ app.use(cookieParser());
 app.use("/api/auth", authRoutes);
 app.use("/api/request", requestRoutes);
 app.use("/api/history", historyRoutes);
-app.use("/api/request", starRoutes);
+app.use("/api/star", starRoutes);
 
 const server = http.createServer(app);
 

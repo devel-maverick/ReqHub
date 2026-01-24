@@ -19,9 +19,12 @@ export default function SignIn() {
     <div className="min-h-screen bg-[#0b0b0f] flex items-center justify-center px-4">
       <div className="w-full max-w-md bg-[#111118] rounded-2xl shadow-xl p-8 border border-white/10">
 
-        {/* HEADER */}
         <div className="text-center mb-6">
-          <div className="text-3xl mb-2">⚡</div>
+          <img
+            src="/reqhub-logo.png"
+            alt="ReqHub logo"
+            className="w-10 h-10 mx-auto mb-2 rounded-xl shadow-[0_0_20px_rgba(59,130,246,0.5)]"
+          />
           <h1 className="text-2xl font-semibold text-white">
             Sign in to ReqHub
           </h1>

@@ -4,12 +4,29 @@ import prisma from "../lib/prisma.js";
 import { requireAuth } from "../middleware/authmiddleware.js";
 
 const router = express.Router();
+const cookieJar = new Map();
 
-/*
- POST /api/request
- This acts like Postman "Send" button
- One request = one execution = one DB row
-*/
+function storeResponseCookies(userId, targetUrl, setCookieHeader) {
+  if (!setCookieHeader) return;
+
+  const key = getJarKey(userId, targetUrl);
+  const current = cookieJar.get(key) || {};
+
+  const cookieStrings = Array.isArray(setCookieHeader)
+    ? setCookieHeader
+    : [setCookieHeader];
+
+  for (const raw of cookieStrings) {
+    if (!raw) continue;
+    const firstPart = String(raw).split(";")[0];
+    const [name, value] = firstPart.split("=");
+    if (!name) continue;
+    current[name.trim()] = (value || "").trim();
+  }
+
+  cookieJar.set(key, current);
+}
+
 router.post("/", requireAuth, async (req, res) => {
   const {
     method,
@@ -28,8 +45,7 @@ router.post("/", requireAuth, async (req, res) => {
   }
 
   try {
-
-    const axiosConfig = {
+    let axiosConfig = {
       method,
       url,
       params,
@@ -58,8 +74,8 @@ router.post("/", requireAuth, async (req, res) => {
         password: authData.password || "",
       };
     }
-
-
+    // Attach cookies from our simple jar (if any)
+    axiosConfig.headers = applyCookiesToRequest(req.user.id, url, axiosConfig.headers || {});
 
     const startTime = Date.now();
     const response = await axios(axiosConfig);
@@ -103,6 +119,9 @@ router.post("/", requireAuth, async (req, res) => {
         sizeBytes,
       },
     });
+
+    // Update cookie jar from response
+    storeResponseCookies(req.user.id, url, response.headers["set-cookie"]);
 
 
     res.json({
