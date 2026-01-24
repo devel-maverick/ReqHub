@@ -4,7 +4,75 @@ import prisma from "../lib/prisma.js";
 import { requireAuth } from "../middleware/authmiddleware.js";
 
 const router = express.Router();
-const cookieJar = new Map();
+const cookieJar = new Map(); // key: `${userId}::${host}`, value: { name: value }
+
+function getJarKey(userId, targetUrl) {
+  try {
+    const urlObj = new URL(targetUrl);
+    return `${userId}::${urlObj.host}`;
+  } catch {
+    return `${userId}::unknown`;
+  }
+}
+
+function applyCookiesToRequest(userId, targetUrl, headers) {
+  const key = getJarKey(userId, targetUrl);
+  const jar = cookieJar.get(key);
+  if (!jar || Object.keys(jar).length === 0) return headers;
+
+  const cookieHeader = Object.entries(jar)
+    .map(([name, value]) => `${name}=${value}`)
+    .join("; ");
+
+  return {
+    ...headers,
+    Cookie: cookieHeader,
+  };
+}
+
+function storeResponseCookies(userId, targetUrl, setCookieHeader) {
+  if (!setCookieHeader) return;
+
+  const key = getJarKey(userId, targetUrl);
+  const current = cookieJar.get(key) || {};
+
+  const cookieStrings = Array.isArray(setCookieHeader)
+    ? setCookieHeader
+    : [setCookieHeader];
+
+  for (const raw of cookieStrings) {
+    if (!raw) continue;
+    const firstPart = String(raw).split(";")[0];
+    const [name, value] = firstPart.split("=");
+    if (!name) continue;
+    current[name.trim()] = (value || "").trim();
+  }
+
+  cookieJar.set(key, current);
+}
+
+
+function storeResponseCookies(userId, targetUrl, setCookieHeader) {
+  if (!setCookieHeader) return;
+
+  const key = getJarKey(userId, targetUrl);
+  const current = cookieJar.get(key) || {};
+
+  const cookieStrings = Array.isArray(setCookieHeader)
+    ? setCookieHeader
+    : [setCookieHeader];
+
+  for (const raw of cookieStrings) {
+    if (!raw) continue;
+    const firstPart = String(raw).split(";")[0];
+    const [name, value] = firstPart.split("=");
+    if (!name) continue;
+    current[name.trim()] = (value || "").trim();
+  }
+
+  cookieJar.set(key, current);
+}
+
 
 function storeResponseCookies(userId, targetUrl, setCookieHeader) {
   if (!setCookieHeader) return;
