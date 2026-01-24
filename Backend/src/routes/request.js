@@ -51,50 +51,6 @@ function storeResponseCookies(userId, targetUrl, setCookieHeader) {
   cookieJar.set(key, current);
 }
 
-
-function storeResponseCookies(userId, targetUrl, setCookieHeader) {
-  if (!setCookieHeader) return;
-
-  const key = getJarKey(userId, targetUrl);
-  const current = cookieJar.get(key) || {};
-
-  const cookieStrings = Array.isArray(setCookieHeader)
-    ? setCookieHeader
-    : [setCookieHeader];
-
-  for (const raw of cookieStrings) {
-    if (!raw) continue;
-    const firstPart = String(raw).split(";")[0];
-    const [name, value] = firstPart.split("=");
-    if (!name) continue;
-    current[name.trim()] = (value || "").trim();
-  }
-
-  cookieJar.set(key, current);
-}
-
-
-function storeResponseCookies(userId, targetUrl, setCookieHeader) {
-  if (!setCookieHeader) return;
-
-  const key = getJarKey(userId, targetUrl);
-  const current = cookieJar.get(key) || {};
-
-  const cookieStrings = Array.isArray(setCookieHeader)
-    ? setCookieHeader
-    : [setCookieHeader];
-
-  for (const raw of cookieStrings) {
-    if (!raw) continue;
-    const firstPart = String(raw).split(";")[0];
-    const [name, value] = firstPart.split("=");
-    if (!name) continue;
-    current[name.trim()] = (value || "").trim();
-  }
-
-  cookieJar.set(key, current);
-}
-
 router.post("/", requireAuth, async (req, res) => {
   const {
     method,
