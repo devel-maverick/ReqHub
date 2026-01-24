@@ -4,6 +4,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import http from "http";
+import { fileURLToPath } from "url";
 
 import authRoutes from "./src/routes/auth.js";
 import requestRoutes from "./src/routes/request.js";
@@ -14,39 +15,38 @@ import { setupWebSocket } from "./src/lib/wsserver.js";
 dotenv.config();
 
 const app = express();
+const server = http.createServer(app);
 
-app.use(cors({
-  origin: process.env.NODE_ENV === "production"
-    ? process.env.FRONTEND_URL
-    : "http://localhost:5173",
-  credentials: true
-}));
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
+app.use(
+  cors({
+    origin:
+      process.env.NODE_ENV === "production"
+        ? process.env.FRONTEND_URL
+        : "http://localhost:5173",
+    credentials: true,
+  })
+);
 
 app.use(express.json());
 app.use(cookieParser());
+
 
 app.use("/api/auth", authRoutes);
 app.use("/api/request", requestRoutes);
 app.use("/api/history", historyRoutes);
 app.use("/api/star", starRoutes);
 
-const server = http.createServer(app);
-
 setupWebSocket(server);
 
-
-const __dirname = path.resolve();
-
 app.use(express.static(path.join(__dirname, "../frontend/dist")));
-
-app.get("/*", (req, res) => {
+app.use((req, res) => {
   res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
 });
 
-
-
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-  console.log(`Backend running on http://localhost:${PORT}`);
+  console.log(`Backend running on port ${PORT}`);
 });
