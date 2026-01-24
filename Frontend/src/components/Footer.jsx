@@ -27,7 +27,7 @@ export default function Footer() {
       </div>
 
       <p className="text-center mt-12 text-xs">
-        © 2026 ReqHub all rights reserved.
+        © 2026 ReqHub · built by Maverick
       </p>
     </footer>
   );

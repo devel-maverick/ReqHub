@@ -1,103 +1,254 @@
-// import { useState } from "react";
-// import { useAuthStore } from "../store/useAuthStore";
-// import axiosInstance from "../api/axios";
-
-// export default function Tester() {
-//   const { authUser } = useAuthStore();
-
-//   const [method, setMethod] = useState("GET");
-//   const [url, setUrl] = useState("");
-//   const [loading, setLoading] = useState(false);
-//   const [response, setResponse] = useState(null);
-//   const [error, setError] = useState(null);
-
-//   const sendRequest = async () => {
-//     if (!url) return;
-
-//     setLoading(true);
-//     setError(null);
-
-//     try {
-//       const res = await axiosInstance.post("/request", {
-//         method,
-//         url,
-//       });
-
-//       setResponse(res.data);
-//     } catch (err) {
-//       setError(err?.response?.data?.message || "Request failed");
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   return (
-//     <div className="h-screen bg-[#0b0b0f] text-white p-6">
-//       {/* Header */}
-//       <div className="mb-6">
-//         <h1 className="text-xl font-semibold">ReqHub Tester</h1>
-//         <p className="text-sm text-gray-400">
-//           Logged in as {authUser.email}
-//         </p>
-//       </div>
-
-//       {/* Request Bar */}
-//       <div className="flex gap-2 mb-6">
-//         <select
-//           value={method}
-//           onChange={(e) => setMethod(e.target.value)}
-//           className="bg-[#111118] border border-white/10 rounded px-3 py-2"
-//         >
-//           <option>GET</option>
-//           <option>POST</option>
-//           <option>PUT</option>
-//           <option>PATCH</option>
-//           <option>DELETE</option>
-//         </select>
-
-//         <input
-//           value={url}
-//           onChange={(e) => setUrl(e.target.value)}
-//           placeholder="https://api.github.com/users/octocat"
-//           className="flex-1 bg-[#111118] border border-white/10 rounded px-3 py-2 outline-none"
-//         />
-
-//         <button
-//           onClick={sendRequest}
-//           disabled={loading}
-//           className="bg-violet-600 hover:bg-violet-700 disabled:opacity-60 px-4 rounded"
-//         >
-//           {loading ? "Sending..." : "Send"}
-//         </button>
-//       </div>
-
-//       {/* Response */}
-//       {response && (
-//         <div className="bg-[#111118] border border-white/10 rounded p-4 text-sm overflow-auto max-h-[60vh]">
-//           <div className="mb-2 text-gray-400">
-//             Status: {response.status}
-//           </div>
-
-//           <pre className="whitespace-pre-wrap">
-//             {JSON.stringify(response.body, null, 2)}
-//           </pre>
-//         </div>
-//       )}
-
-//       {error && (
-//         <div className="text-red-400 mt-4 text-sm">
-//           {error}
-//         </div>
-//       )}
-//     </div>
-//   );
-// }
+import React, { useState, useCallback, useEffect, useRef } from "react";
+import axiosInstance from "../api/axios";
+import RequestBar from "../components/RequestBar";
+import HistoryPanel from "../components/HistoryPanel";
+import RequestTabs from "../components/RequestTabs";
+import ResponsePanel from "../components/ResponsePanel";
+import WebSocketPanel from "../components/WebSocketPanel";
 export default function Tester() {
+  const [showHistory, setShowHistory] = useState(true);
+  const [historyReloadKey, setHistoryReloadKey] = useState(0);
+  const [activeRequest, setActiveRequest] = useState({
+    method: "GET",
+    url: "",
+    params: [{ key: "", value: "" }],
+    headers: [{ key: "Content-Type", value: "application/json" }],
+    body: "",
+  });
+
+  const [response, setResponse] = useState(null);
+  const [meta, setMeta] = useState(null);
+
+  const [protocol, setProtocol] = useState("HTTP");
+  const [wsStatus, setWsStatus] = useState("disconnected");
+  const [wsMessages, setWsMessages] = useState([]);
+  const wsRef = useRef(null);
+
+  const sendRequest = async () => {
+    if (protocol === "WebSocket") return;
+    if (!activeRequest.url) return;
+
+    const params = (activeRequest.params ?? [])
+      .filter(p => p.key)
+      .reduce((acc, p) => ({ ...acc, [p.key]: p.value }), {});
+
+    let headers = (activeRequest.headers ?? [])
+      .filter(h => h.key)
+      .reduce((acc, h) => ({ ...acc, [h.key]: h.value }), {});
+
+    const authType = activeRequest.authType;
+    const authData = activeRequest.authData || {};
+
+    if (authType === "bearer" && authData.token) {
+      headers = {
+        ...headers,
+        Authorization: `Bearer ${authData.token}`,
+      };
+    }
+
+    if (authType === "basic" && authData.username) {
+      const raw = `${authData.username}:${authData.password || ""}`;
+      const encoded = btoa(raw);
+      headers = {
+        ...headers,
+        Authorization: `Basic ${encoded}`,
+      };
+    }
+
+    const start = performance.now();
+    try {
+      const res = await axiosInstance.post("/request", {
+        method: activeRequest.method,
+        url: activeRequest.url,
+        params,
+        headers,
+        authType,
+        authData,
+        bodyType: activeRequest.body ? "raw" : "none",
+        body: null,
+        rawText: activeRequest.body || null,
+      });
+
+      const time = Math.round(performance.now() - start);
+      const result = res.data || {};
+      const body =
+        result.body !== undefined && result.body !== null
+          ? result.body
+          : result.text !== undefined && result.text !== null
+          ? result.text
+          : result;
+
+      setResponse(body);
+      setMeta({
+        status: result.status ?? res.status,
+        time: result.timeMs ?? time,
+        size:
+          result.sizeBytes != null
+            ? `${result.sizeBytes} B`
+            : `${JSON.stringify(body).length} B`,
+        headers: result.headers || {},
+      });
+      setHistoryReloadKey((k) => k + 1);
+    } catch (err) {
+      const time = Math.round(performance.now() - start);
+      if (err.response) {
+        const data = err.response.data;
+        setResponse(data || err.message);
+        setMeta({
+          status: err.response.status,
+          time,
+          size: JSON.stringify(data ?? err.message).length + " B",
+          headers: err.response.headers || {},
+        });
+      } else {
+        setResponse(err.message || "Request failed");
+        setMeta({
+          status: "Error",
+          time,
+          size: (err.message || "Request failed").length + " B",
+          headers: {},
+        });
+      }
+    }
+  };
+  useEffect(() => {
+    setHistoryReloadKey((k) => k + 1);
+  }, []);
+
+  const appendWsMessage = (partial) => {
+    setWsMessages((prev) => [
+      ...prev,
+      {
+        id: crypto.randomUUID(),
+        ...partial,
+      },
+    ]);
+  };
+
+  const disconnectWebSocket = () => {
+    if (wsRef.current) {
+      wsRef.current.close();
+      wsRef.current = null;
+    }
+  };
+
+  const connectWebSocket = () => {
+    if (!activeRequest.url) return;
+
+    disconnectWebSocket();
+    try {
+      const socket = new WebSocket(activeRequest.url);
+      wsRef.current = socket;
+      setWsStatus("connecting");
+      setWsMessages([]);
+
+      socket.onopen = () => {
+        setWsStatus("connected");
+        appendWsMessage({ type: "system", text: "Connected" });
+        // Log this WebSocket call into backend history
+        axiosInstance
+          .post("/history/ws", { url: activeRequest.url })
+          .then(() => setHistoryReloadKey((k) => k + 1))
+          .catch(() => {});
+      };
+
+      socket.onmessage = (event) => {
+        appendWsMessage({ type: "in", text: String(event.data || "") });
+      };
+
+      socket.onerror = () => {
+        appendWsMessage({ type: "system", text: "Error on WebSocket connection" });
+      };
+
+      socket.onclose = () => {
+        setWsStatus("disconnected");
+        appendWsMessage({ type: "system", text: "Disconnected" });
+      };
+    } catch {
+      setWsStatus("disconnected");
+      appendWsMessage({ type: "system", text: "Failed to open WebSocket" });
+    }
+  };
+
+  const handleWsConnectToggle = () => {
+    if (wsStatus === "connected" || wsStatus === "connecting") {
+      disconnectWebSocket();
+    } else {
+      connectWebSocket();
+    }
+  };
+
+  const handleWsSendMessage = (text) => {
+    if (!wsRef.current || wsStatus !== "connected") return;
+    try {
+      wsRef.current.send(text);
+      appendWsMessage({ type: "out", text });
+    } catch {
+      appendWsMessage({ type: "system", text: "Failed to send message" });
+    }
+  };
+
+  useEffect(() => {
+    if (protocol !== "WebSocket") {
+      disconnectWebSocket();
+      setWsStatus("disconnected");
+    }
+    return () => {
+      disconnectWebSocket();
+    };
+  }, [protocol]);
+
   return (
-    <div className="min-h-screen bg-[#0b0b0f] text-white flex items-center justify-center">
-      <h1 className="text-3xl font-semibold">
-        🚀 ReqHub Tester Dashboard
-      </h1>
+    <div className="flex h-screen bg-black text-white overflow-hidden">
+      {showHistory && (
+        <div className="w-72 min-w-72 max-w-72 flex-shrink-0">
+          <HistoryPanel
+            setActiveRequest={setActiveRequest}
+            setProtocol={setProtocol}
+            reloadKey={historyReloadKey}
+          />
+        </div>
+      )}
+
+      <div className="flex-1 flex flex-col overflow-auto min-w-0">
+        <RequestBar
+          request={activeRequest}
+          setRequest={setActiveRequest}
+          onSend={sendRequest}
+          protocol={protocol}
+          setProtocol={setProtocol}
+          onConnect={handleWsConnectToggle}
+          isWsConnected={wsStatus === "connected"}
+          toggleHistory={() => setShowHistory(!showHistory)}
+        />
+
+        <div className="flex flex-row h-full">
+          {protocol === "HTTP" ? (
+            <>
+              <div className="w-[600px] min-w-[400px] max-w-[700px] border-r border-zinc-800">
+                <RequestTabs
+                  request={activeRequest}
+                  setRequest={setActiveRequest}
+                />
+              </div>
+              <div className="flex-1">
+                <ResponsePanel response={response} meta={meta} />
+              </div>
+            </>
+          ) : (
+            <div className="flex-1 border-l border-zinc-900">
+              <WebSocketPanel
+                url={activeRequest.url}
+                status={wsStatus}
+                messages={wsMessages}
+                onSendMessage={handleWsSendMessage}
+              />
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
+
+
