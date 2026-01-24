@@ -4,7 +4,7 @@ import prisma from "../lib/prisma.js";
 import { requireAuth } from "../middleware/authmiddleware.js";
 
 const router = express.Router();
-const cookieJar = new Map(); // key: `${userId}::${host}`, value: { name: value }
+const cookieJar = new Map();
 
 function getJarKey(userId, targetUrl) {
   try {
