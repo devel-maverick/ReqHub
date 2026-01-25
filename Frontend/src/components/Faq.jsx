@@ -1,5 +1,5 @@
 import { useState } from "react";
-import {motion,AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Minus } from "lucide-react";
 
 const faqs = [
@@ -35,27 +35,22 @@ export default function FAQ() {
   return (
     <section className="py-24 bg-black relative overflow-hidden">
       {/* Background Gradients */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-7xl pointer-events-none">
-         <div className="absolute top-[20%] left-[10%] w-72 h-72 bg-purple-900/20 rounded-full blur-[100px]" />
-         <div className="absolute bottom-[20%] right-[10%] w-72 h-72 bg-blue-900/20 rounded-full blur-[100px]" />
-      </div>
-
       <div className="max-w-4xl mx-auto px-6 relative z-10">
         <div className="text-center mb-16">
-          <motion.h2 
+          <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-3xl md:text-5xl font-bold bg-clip-text text-transparent bg-linear-to-r from-white to-gray-400 mb-4"
+            className="text-3xl md:text-5xl font-bold text-white mb-4 tracking-tight"
           >
             Frequently Asked Questions
           </motion.h2>
-          <motion.p 
-             initial={{ opacity: 0, y: 20 }}
-             whileInView={{ opacity: 1, y: 0 }}
-             viewport={{ once: true }}
-             transition={{ delay: 0.1 }}
-             className="text-gray-400 text-lg"
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+            className="text-gray-400 text-lg"
           >
             Everything you need to know about ReqHub
           </motion.p>
@@ -69,17 +64,17 @@ export default function FAQ() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
-              className={`border border-white/10 rounded-2xl overflow-hidden transition-colors duration-300 ${openIndex === index ? "bg-white/5 border-purple-500/30" : "bg-black hover:bg-white/5"}`}
+              className={`border border-gray-800 rounded-lg overflow-hidden transition-colors duration-300 ${openIndex === index ? "bg-gray-900 border-gray-700" : "bg-black hover:bg-gray-900/50"}`}
             >
               <button
                 onClick={() => toggleFAQ(index)}
                 className="w-full flex items-center justify-between p-6 text-left"
               >
-                <span className={`text-lg font-medium ${openIndex === index ? "text-purple-400" : "text-white"}`}>
+                <span className={`text-lg font-medium ${openIndex === index ? "text-white" : "text-gray-300"}`}>
                   {faq.q}
                 </span>
-                <div className={`p-2 rounded-full transition-colors ${openIndex === index ? "bg-purple-500/20 text-purple-400" : "bg-white/5 text-gray-400"}`}>
-                  {openIndex === index ? <Minus size={20} /> : <Plus size={20} />}
+                <div className={`p-2 rounded-full transition-colors ${openIndex === index ? "bg-white text-black" : "bg-gray-900 text-gray-400"}`}>
+                  {openIndex === index ? <Minus size={16} /> : <Plus size={16} />}
                 </div>
               </button>
 
@@ -91,7 +86,7 @@ export default function FAQ() {
                     exit={{ height: 0, opacity: 0 }}
                     transition={{ duration: 0.3, ease: "easeInOut" }}
                   >
-                    <div className="px-6 pb-6 text-gray-400 leading-relaxed border-t border-white/5 pt-4">
+                    <div className="px-6 pb-6 text-gray-400 leading-relaxed border-t border-gray-800 pt-4 text-sm">
                       {faq.a}
                     </div>
                   </motion.div>

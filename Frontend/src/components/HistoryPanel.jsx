@@ -27,24 +27,24 @@ export default function HistoryPanel({ setActiveRequest, setProtocol, reloadKey 
     loadLists();
   }, [reloadKey]);
 
-    const filteredHistory = historyList.filter(item =>
-      item.url?.toLowerCase().includes(searchHistory.toLowerCase()) ||
-      item.method?.toLowerCase().includes(searchHistory.toLowerCase())
-    );
-    const filteredSaved = savedList.filter(item =>
-      item.url?.toLowerCase().includes(searchSaved.toLowerCase()) ||
-      item.method?.toLowerCase().includes(searchSaved.toLowerCase())
-    );
+  const filteredHistory = historyList.filter(item =>
+    item.url?.toLowerCase().includes(searchHistory.toLowerCase()) ||
+    item.method?.toLowerCase().includes(searchHistory.toLowerCase())
+  );
+  const filteredSaved = savedList.filter(item =>
+    item.url?.toLowerCase().includes(searchSaved.toLowerCase()) ||
+    item.method?.toLowerCase().includes(searchSaved.toLowerCase())
+  );
 
   return (
-    <div className="w-72 border-r border-gray-800 p-3 overflow-y-auto">
-      <div className="flex gap-2 mb-3">
+    <div className="w-72 border-r border-gray-800 bg-black p-3 overflow-y-auto">
+      <div className="flex gap-2 mb-3 bg-gray-900 p-1 rounded-lg">
         <button
-          className={`flex-1 py-1 rounded ${activeTab === "history" ? "bg-gray-700 text-purple-400" : "bg-gray-900 text-gray-400"}`}
+          className={`flex-1 py-1 rounded-md text-sm font-medium transition-colors ${activeTab === "history" ? "bg-black text-white shadow-sm" : "text-gray-500 hover:text-gray-300"}`}
           onClick={() => setActiveTab("history")}
         >History</button>
         <button
-          className={`flex-1 py-1 rounded ${activeTab === "saved" ? "bg-gray-700 text-purple-400" : "bg-gray-900 text-gray-400"}`}
+          className={`flex-1 py-1 rounded-md text-sm font-medium transition-colors ${activeTab === "saved" ? "bg-black text-white shadow-sm" : "text-gray-500 hover:text-gray-300"}`}
           onClick={() => setActiveTab("saved")}
         >Saved</button>
       </div>
@@ -55,9 +55,9 @@ export default function HistoryPanel({ setActiveRequest, setProtocol, reloadKey 
             value={searchHistory}
             onChange={e => setSearchHistory(e.target.value)}
             placeholder="Search history..."
-            className="w-full mb-2 bg-gray-900 border border-gray-700 p-1 rounded"
+            className="w-full mb-3 bg-black border border-gray-800 focus:border-gray-700 text-sm p-2 rounded outline-none transition-colors"
           />
-          {filteredHistory.length === 0 && <div className="text-xs text-gray-500">No history found.</div>}
+          {filteredHistory.length === 0 && <div className="text-xs text-gray-500 p-2">No history found.</div>}
           {filteredHistory.map((item, i) => (
             <div
               key={i}
@@ -66,12 +66,12 @@ export default function HistoryPanel({ setActiveRequest, setProtocol, reloadKey 
                 setProtocol && setProtocol(proto);
                 setActiveRequest(item);
               }}
-              className="p-2 mb-1 bg-gray-900 rounded cursor-pointer hover:bg-gray-800 flex items-center group relative"
+              className="p-2 mb-1 rounded cursor-pointer hover:bg-gray-900 flex items-center group relative border border-transparent hover:border-gray-800 transition-all"
             >
-              <div className="text-xs text-purple-400 mr-2 min-w-[40px]">{item.method}</div>
-              <div className="text-sm truncate flex-1" title={item.url}>{item.url}</div>
+              <div className="text-xs font-mono text-blue-500 font-bold mr-2 min-w-[40px]">{item.method}</div>
+              <div className="text-sm text-gray-300 truncate flex-1 font-mono" title={item.url}>{item.url}</div>
               <button
-                className="mr-2 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                className="mr-2 text-gray-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity z-10"
                 title="Remove"
                 onClick={async e => {
                   e.stopPropagation();
@@ -87,8 +87,8 @@ export default function HistoryPanel({ setActiveRequest, setProtocol, reloadKey 
               </button>
               <div className="ml-2">
                 <Star
-                  size={16}
-                  className={item.isStarred ? "text-yellow-400 cursor-pointer" : "text-gray-400 cursor-pointer"}
+                  size={14}
+                  className={item.isStarred ? "fill-white text-white cursor-pointer" : "text-gray-600 hover:text-gray-400 cursor-pointer"}
                   onClick={async (e) => {
                     e.stopPropagation();
                     try {
@@ -112,9 +112,9 @@ export default function HistoryPanel({ setActiveRequest, setProtocol, reloadKey 
             value={searchSaved}
             onChange={e => setSearchSaved(e.target.value)}
             placeholder="Search saved..."
-            className="w-full mb-2 bg-gray-900 border border-gray-700 p-1 rounded"
+            className="w-full mb-3 bg-black border border-gray-800 focus:border-gray-700 text-sm p-2 rounded outline-none transition-colors"
           />
-          {filteredSaved.length === 0 && <div className="text-xs text-gray-500">No saved requests.</div>}
+          {filteredSaved.length === 0 && <div className="text-xs text-gray-500 p-2">No saved requests.</div>}
           {filteredSaved.map((item, i) => (
             <div
               key={i}
@@ -122,12 +122,12 @@ export default function HistoryPanel({ setActiveRequest, setProtocol, reloadKey 
                 setProtocol && setProtocol("HTTP");
                 setActiveRequest(item);
               }}
-              className="p-2 mb-1 bg-gray-900 rounded cursor-pointer hover:bg-gray-800 flex items-center group relative"
+              className="p-2 mb-1 rounded cursor-pointer hover:bg-gray-900 flex items-center group relative border border-transparent hover:border-gray-800 transition-all"
             >
-              <div className="text-xs text-purple-400 mr-2 min-w-[40px]">{item.method}</div>
-              <div className="text-sm truncate flex-1" title={item.url}>{item.url}</div>
+              <div className="text-xs font-mono text-blue-500 font-bold mr-2 min-w-[40px]">{item.method}</div>
+              <div className="text-sm text-gray-300 truncate flex-1 font-mono" title={item.url}>{item.url}</div>
               <button
-                className="mr-2 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                className="mr-2 text-gray-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity z-10"
                 title="Remove"
                 onClick={async e => {
                   e.stopPropagation();
@@ -141,7 +141,7 @@ export default function HistoryPanel({ setActiveRequest, setProtocol, reloadKey 
               >
                 <X size={14} />
               </button>
-              <div className="ml-1"><Star size={16} className="text-yellow-400" /></div>
+              <div className="ml-1"><Star size={14} className="fill-white text-white" /></div>
             </div>
           ))}
         </>

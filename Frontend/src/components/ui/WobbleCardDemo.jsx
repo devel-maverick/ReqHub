@@ -6,27 +6,27 @@ export function WobbleCardDemo({ plans }) {
       {plans.map((plan) => (
         <div
           key={plan.title}
-          className="relative rounded-[32px] px-8 py-10 bg-gradient-to-br from-white/10 via-white/[0.02] to-transparent border border-white/10 shadow-[0_0_80px_rgba(88,28,135,0.4)] text-left flex flex-col justify-between min-h-[260px]"
+          className="relative rounded-xl px-8 py-10 bg-black border border-gray-800 text-left flex flex-col justify-between min-h-[260px] hover:bg-gray-900/50 transition-colors"
         >
           <div>
-            <h2 className="text-2xl md:text-3xl font-semibold mb-3 text-white">
+            <h2 className="text-2xl md:text-2xl font-semibold mb-3 text-white tracking-tight">
               {plan.title}
             </h2>
-            <p className="text-base text-gray-300 mb-4">
+            <p className="text-base text-gray-400 mb-6 font-light">
               {plan.description}
             </p>
             {plan.features && (
-              <ul className="space-y-2 text-sm text-gray-300">
+              <ul className="space-y-3 text-sm text-gray-400">
                 {plan.features.map((feature) => (
                   <li key={feature} className="flex items-start gap-2">
-                    <span className="mt-[2px] text-emerald-400">✓</span>
+                    <span className="mt-[2px] text-white">✓</span>
                     <span>{feature}</span>
                   </li>
                 ))}
               </ul>
             )}
           </div>
-          <div className="mt-6 text-3xl font-bold">
+          <div className="mt-8 text-3xl font-bold tracking-tight">
             <span className={plan.priceColor}>{plan.price}</span>
           </div>
         </div>

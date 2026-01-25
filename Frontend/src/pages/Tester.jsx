@@ -24,17 +24,32 @@ export default function Tester() {
   const [wsMessages, setWsMessages] = useState([]);
   const wsRef = useRef(null);
 
+  const [envVars, setEnvVars] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem("envVars") || "{}");
+    } catch {
+      return {};
+    }
+  });
+
+  const substituteEnvVars = (str) => {
+    if (!str || typeof str !== "string") return str;
+    return str.replace(/\{\{(\w+)\}\}/g, (_, key) => envVars[key] || "");
+  };
+
   const sendRequest = async () => {
     if (protocol === "WebSocket") return;
     if (!activeRequest.url) return;
 
+    const substitutedUrl = substituteEnvVars(activeRequest.url);
+
     const params = (activeRequest.params ?? [])
       .filter(p => p.key)
-      .reduce((acc, p) => ({ ...acc, [p.key]: p.value }), {});
+      .reduce((acc, p) => ({ ...acc, [substituteEnvVars(p.key)]: substituteEnvVars(p.value) }), {});
 
     let headers = (activeRequest.headers ?? [])
       .filter(h => h.key)
-      .reduce((acc, h) => ({ ...acc, [h.key]: h.value }), {});
+      .reduce((acc, h) => ({ ...acc, [substituteEnvVars(h.key)]: substituteEnvVars(h.value) }), {});
 
     const authType = activeRequest.authType;
     const authData = activeRequest.authData || {};
@@ -42,12 +57,14 @@ export default function Tester() {
     if (authType === "bearer" && authData.token) {
       headers = {
         ...headers,
-        Authorization: `Bearer ${authData.token}`,
+        Authorization: `Bearer ${substituteEnvVars(authData.token)}`,
       };
     }
 
     if (authType === "basic" && authData.username) {
-      const raw = `${authData.username}:${authData.password || ""}`;
+      const u = substituteEnvVars(authData.username);
+      const p = substituteEnvVars(authData.password || "");
+      const raw = `${u}:${p}`;
       const encoded = btoa(raw);
       headers = {
         ...headers,
@@ -55,18 +72,23 @@ export default function Tester() {
       };
     }
 
+    let finalBody = null;
+    if (activeRequest.body) {
+      finalBody = substituteEnvVars(activeRequest.body);
+    }
+
     const start = performance.now();
     try {
       const res = await axiosInstance.post("/request", {
         method: activeRequest.method,
-        url: activeRequest.url,
+        url: substitutedUrl,
         params,
         headers,
         authType,
         authData,
         bodyType: activeRequest.body ? "raw" : "none",
         body: null,
-        rawText: activeRequest.body || null,
+        rawText: finalBody,
       });
 
       const time = Math.round(performance.now() - start);
@@ -75,8 +97,8 @@ export default function Tester() {
         result.body !== undefined && result.body !== null
           ? result.body
           : result.text !== undefined && result.text !== null
-          ? result.text
-          : result;
+            ? result.text
+            : result;
 
       setResponse(body);
       setMeta({
@@ -149,7 +171,7 @@ export default function Tester() {
         axiosInstance
           .post("/history/ws", { url: activeRequest.url })
           .then(() => setHistoryReloadKey((k) => k + 1))
-          .catch(() => {});
+          .catch(() => { });
       };
 
       socket.onmessage = (event) => {
@@ -220,6 +242,8 @@ export default function Tester() {
           onConnect={handleWsConnectToggle}
           isWsConnected={wsStatus === "connected"}
           toggleHistory={() => setShowHistory(!showHistory)}
+          envVars={envVars}
+          setEnvVars={setEnvVars}
         />
 
         <div className="flex flex-row h-full">
