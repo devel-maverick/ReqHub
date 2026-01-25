@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore";
 import { useState } from "react";
 import { Menu, Github } from "lucide-react";
@@ -8,6 +8,20 @@ export default function Navbar() {
   const { authUser, logout } = useAuthStore();
   const [open, setOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const scrollToSection = (id) => {
+    if (location.pathname === "/") {
+      const element = document.getElementById(id);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+      }
+    } else {
+      navigate("/", { state: { scrollTo: id } });
+    }
+    setMobileOpen(false);
+  };
 
   return (
     <nav className="sticky top-0 z-50 bg-black/80 backdrop-blur border-b border-gray-800">
@@ -20,6 +34,7 @@ export default function Navbar() {
         >
           <Link
             to="/"
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
             className="flex items-center gap-2"
           >
             <img
@@ -33,9 +48,9 @@ export default function Navbar() {
 
         {/* DESKTOP LINKS */}
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="hidden md:flex gap-8 text-sm text-gray-400 font-medium">
-          <a href="#features" className="hover:text-white transition-colors">Features</a>
-          <a href="#how" className="hover:text-white transition-colors">How it works</a>
-          <a href="#pricing" className="hover:text-white transition-colors">Pricing</a>
+          <button onClick={() => scrollToSection("features")} className="hover:text-white transition-colors cursor-pointer">Features</button>
+          <button onClick={() => scrollToSection("how")} className="hover:text-white transition-colors cursor-pointer">How it works</button>
+          <button onClick={() => scrollToSection("pricing")} className="hover:text-white transition-colors cursor-pointer">Pricing</button>
         </motion.div>
 
         {/* RIGHT SIDE */}
@@ -79,9 +94,9 @@ export default function Navbar() {
       <AnimatePresence>
         {mobileOpen && (
           <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="md:hidden px-6 py-4 space-y-3 bg-black border-t border-gray-800">
-            <a href="#features" className="block py-2 text-gray-400 hover:text-white">Features</a>
-            <a href="#how" className="block py-2 text-gray-400 hover:text-white">How it works</a>
-            <a href="#pricing" className="block py-2 text-gray-400 hover:text-white">Pricing</a>
+            <button onClick={() => scrollToSection("features")} className="block w-full text-left py-2 text-gray-400 hover:text-white">Features</button>
+            <button onClick={() => scrollToSection("how")} className="block w-full text-left py-2 text-gray-400 hover:text-white">How it works</button>
+            <button onClick={() => scrollToSection("pricing")} className="block w-full text-left py-2 text-gray-400 hover:text-white">Pricing</button>
           </motion.div>
         )}
       </AnimatePresence>

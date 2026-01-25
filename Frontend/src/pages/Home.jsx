@@ -3,8 +3,34 @@ import FAQ from "../components/Faq";
 import { CardHoverEffectDemo } from "../components/ui/CardHoverEffectDemo";
 import { WobbleCardDemo } from "../components/ui/WobbleCardDemo";
 import { Zap, Shield, Globe, Cpu, Key, Wifi, Activity, Terminal, Star, Play, FileCode, Github, ArrowRight, Check } from "lucide-react";
+import { useAuthStore } from "../store/useAuthStore";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useEffect } from "react";
 
 export default function Home() {
+  const { authUser } = useAuthStore();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.state && location.state.scrollTo) {
+      const element = document.getElementById(location.state.scrollTo);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+        window.history.replaceState({}, document.title);
+      }
+    }
+  }, [location]);
+
+  const handleNavigation = (e) => {
+    e.preventDefault();
+    if (authUser) {
+      navigate("/tester");
+    } else {
+      navigate("/signup");
+    }
+  };
+
   return (
     <div className="bg-[#0A0A0A] text-white min-h-screen overflow-x-hidden font-sans selection:bg-white/20">
       <section className="relative min-h-screen flex items-center px-6 border-b border-gray-900 overflow-hidden pt-20">
@@ -32,7 +58,7 @@ export default function Home() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 mb-20">
-              <a href="/tester" className="px-8 py-4 rounded-md bg-white text-black hover:bg-gray-200 font-bold text-lg transition-all flex items-center gap-2 group">
+              <a href="/tester" onClick={handleNavigation} className="px-8 py-4 rounded-md bg-white text-black hover:bg-gray-200 font-bold text-lg transition-all flex items-center gap-2 group">
                 Start Testing <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </a>
               <a href="https://github.com/devel-maverick/ReqHub" target="_blank" className="px-8 py-4 rounded-md border border-gray-700 bg-[#111111] text-white hover:bg-[#222] font-medium text-lg transition-all flex items-center gap-2">
@@ -247,7 +273,7 @@ export default function Home() {
                 <span className="text-4xl font-bold text-white">€27</span>
                 <span className="text-gray-500">/month</span>
               </div>
-              <a href="/signup" className="w-full block text-center py-3 rounded bg-gray-200 text-black font-bold hover:bg-white transition-colors mb-8">
+              <a href="/signup" onClick={handleNavigation} className="w-full block text-center py-3 rounded bg-gray-200 text-black font-bold hover:bg-white transition-colors mb-8">
                 Sign up
               </a>
               <ul className="space-y-4 flex-1">
@@ -274,7 +300,7 @@ export default function Home() {
                 <span className="text-4xl font-bold text-white">€54</span>
                 <span className="text-gray-500">/month</span>
               </div>
-              <a href="/signup" className="w-full block text-center py-3 rounded bg-gray-200 text-black font-bold hover:bg-white transition-colors mb-8">
+              <a href="/signup" onClick={handleNavigation} className="w-full block text-center py-3 rounded bg-gray-200 text-black font-bold hover:bg-white transition-colors mb-8">
                 Sign up
               </a>
               <ul className="space-y-4 flex-1">
@@ -305,7 +331,7 @@ export default function Home() {
                 <span className="text-4xl font-bold text-white">€107</span>
                 <span className="text-gray-500">/month</span>
               </div>
-              <a href="/signup" className="w-full block text-center py-3 rounded bg-gray-200 text-black font-bold hover:bg-white transition-colors mb-8">
+              <a href="/signup" onClick={handleNavigation} className="w-full block text-center py-3 rounded bg-gray-200 text-black font-bold hover:bg-white transition-colors mb-8">
                 Sign up
               </a>
               <ul className="space-y-4 flex-1">
@@ -340,7 +366,7 @@ export default function Home() {
         <p className="text-gray-400 mb-12 text-xl max-w-xl mx-auto font-light relative z-10">
           ReqHub is built for developers who want speed, simplicity and power.
         </p>
-        <a href="/tester" className="relative z-10 px-10 py-5 rounded-md bg-white text-black hover:bg-gray-200 font-bold transition-all shadow-xl">
+        <a href="/tester" onClick={handleNavigation} className="relative z-10 px-10 py-5 rounded-md bg-white text-black hover:bg-gray-200 font-bold transition-all shadow-xl">
           Launch ReqHub Free
         </a>
       </section>
