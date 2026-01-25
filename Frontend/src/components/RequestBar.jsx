@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { PanelLeftClose, X, Wifi } from "lucide-react";
+import { PanelLeftClose, X, Wifi, Plus } from "lucide-react";
 import axiosInstance from "../api/axios";
 
 export default function RequestBar({
@@ -11,18 +11,13 @@ export default function RequestBar({
   setProtocol,
   onConnect,
   isWsConnected,
+  envVars,
+  setEnvVars,
 }) {
 
   const [savedRequests, setSavedRequests] = useState([]);
-
   const [showEnvModal, setShowEnvModal] = useState(false);
-  const [envVars, setEnvVars] = useState(() => {
-    try {
-      return JSON.parse(localStorage.getItem("envVars") || "{}");
-    } catch {
-      return {};
-    }
-  });
+
   const [newVarKey, setNewVarKey] = useState("");
   const [newVarValue, setNewVarValue] = useState("");
   const [tabs, setTabs] = useState([
@@ -52,7 +47,6 @@ export default function RequestBar({
     if (activeTab === id) setActiveTab(newTabs[newTabs.length - 1].id);
   };
 
-  // Switch tab
   const switchTab = (id) => {
     setActiveTab(id);
   };
@@ -115,7 +109,7 @@ export default function RequestBar({
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-2">
           {showHistoryPreview && (
-            <div className="bg-gray-700 text-xs px-2 py-1 rounded mr-2 cursor-pointer" onClick={() => setShowHistoryPreview(false)}>
+            <div className="bg-gray-800/50 hover:bg-gray-800 text-xs px-2 py-1 rounded border border-gray-800 cursor-pointer transition-colors" onClick={() => setShowHistoryPreview(false)}>
               History Preview
             </div>
           )}
@@ -125,32 +119,32 @@ export default function RequestBar({
               const tabProtocol = tab.protocol || "HTTP";
               const tabLabel = tabProtocol === "WebSocket" ? "WS" : tab.method;
               return (
-              <div
-                key={tab.id}
-                className={`flex items-center bg-gray-800 rounded mr-1 px-2 py-1 cursor-pointer transition-all duration-200 ${activeTab === tab.id ? "border-b-2 border-purple-500" : "opacity-70"}`}
-                style={{ minWidth: tabWidth, maxWidth: tabWidth }}
-                onClick={() => switchTab(tab.id)}
-              >
-                <span className="mr-2 text-xs">{tabLabel}</span>
-                <span className="truncate text-xs" style={{ maxWidth: tabWidth - 40 }}>{tab.url || "New Request"}</span>
-                {tabs.length > 1 && (
-                  <button className="ml-2 text-gray-400 hover:text-red-400" onClick={e => { e.stopPropagation(); closeTab(tab.id); }}>
-                    <X size={14} />
-                  </button>
-                )}
-              </div>
-            );
+                <div
+                  key={tab.id}
+                  className={`flex items-center rounded mr-1 px-2 py-1 cursor-pointer transition-all duration-200 border-t border-x border-b border-transparent ${activeTab === tab.id ? "bg-black border-gray-800 border-b-black text-white" : "text-gray-500 hover:text-gray-300 hover:bg-gray-900/50"}`}
+                  style={{ minWidth: tabWidth, maxWidth: tabWidth }}
+                  onClick={() => switchTab(tab.id)}
+                >
+                  <span className="mr-2 text-xs font-mono text-blue-500 font-bold">{tabLabel}</span>
+                  <span className="truncate text-xs" style={{ maxWidth: tabWidth - 40 }}>{tab.url || "New Request"}</span>
+                  {tabs.length > 1 && (
+                    <button className="ml-2 text-gray-600 hover:text-white" onClick={e => { e.stopPropagation(); closeTab(tab.id); }}>
+                      <X size={14} />
+                    </button>
+                  )}
+                </div>
+              );
             })}
-            <button className="bg-gray-700 px-2 py-1 rounded ml-1 text-xs" onClick={addTab}>+</button>
+            <button className="text-gray-500 hover:text-white px-2 py-1 text-xs" onClick={addTab}>+</button>
           </div>
         </div>
 
         <div className="flex gap-2">
-          <button className="bg-gray-800 px-3 py-1 rounded" onClick={handleCopyAsCurl}>Copy as CURL</button>
+          <button className="bg-black border border-gray-800 hover:bg-gray-900 text-xs px-3 py-1 rounded transition-colors" onClick={handleCopyAsCurl}>Copy as CURL</button>
 
-          <button className="bg-gray-800 px-3 py-1 rounded" onClick={() => setShowEnvModal(true)}>Env</button>
-          <button onClick={toggleHistory} className="bg-gray-800 p-2 rounded">
-            <PanelLeftClose size={18} />
+          <button className="bg-black border border-gray-800 hover:bg-gray-900 text-xs px-3 py-1 rounded transition-colors" onClick={() => setShowEnvModal(true)}>Env</button>
+          <button onClick={toggleHistory} className="bg-black border border-gray-800 hover:bg-gray-900 p-2 rounded transition-colors">
+            <PanelLeftClose size={16} />
           </button>
         </div>
       </div>
@@ -160,17 +154,17 @@ export default function RequestBar({
         <select
           value={protocol}
           onChange={handleProtocolChange}
-          className="bg-gray-900 border border-gray-700 px-2 rounded"
+          className="bg-black border border-gray-800 hover:border-gray-700 px-2 rounded text-sm focus:outline-none focus:border-gray-600 transition-colors"
         >
           <option value="HTTP">HTTP</option>
-          <option value="WebSocket">WebSocket</option>
+          <option value="WebSocket">WS</option>
         </select>
 
         {protocol === "HTTP" && (
           <select
             value={request.method}
             onChange={(e) => updateRequest("method", e.target.value)}
-            className="bg-gray-900 border border-gray-700 px-2 rounded"
+            className="bg-black border border-gray-800 hover:border-gray-700 px-2 rounded text-sm font-mono focus:outline-none focus:border-gray-600 transition-colors"
           >
             <option>GET</option>
             <option>POST</option>
@@ -183,12 +177,12 @@ export default function RequestBar({
           value={request.url}
           onChange={e => updateRequest("url", e.target.value)}
           placeholder="Enter request URL"
-          className="flex-1 bg-gray-900 border border-gray-700 px-3 py-1 rounded"
+          className="flex-1 bg-black border border-gray-800 hover:border-gray-700 focus:border-gray-600 px-3 py-1 rounded text-sm font-mono focus:outline-none transition-colors"
         />
 
         <button
           onClick={protocol === "WebSocket" ? onConnect : onSend}
-          className="bg-purple-600 px-5 py-1 rounded"
+          className="bg-white text-black border border-white hover:bg-gray-200 px-5 py-1 rounded text-sm font-medium transition-colors"
         >
           {protocol === "WebSocket"
             ? isWsConnected
@@ -200,44 +194,56 @@ export default function RequestBar({
 
 
       {showEnvModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-zinc-900 rounded-lg shadow-lg p-6 w-96 relative">
-            <button className="absolute top-2 right-2" onClick={() => setShowEnvModal(false)}><X size={20} /></button>
-            <div className="font-bold text-lg mb-2">Environment Variables</div>
-            <div className="text-xs mb-3 bg-zinc-800 p-2 rounded">
-              Use environment variables in your requests with the syntax <span className="bg-zinc-700 px-1 rounded">&#123;&#123;VARIABLE_NAME&#125;&#125;</span><br />
-              Example: <span className="bg-zinc-700 px-1 rounded">&#123;&#123;BASE_URL&#125;&#125;/api/users</span>
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-[#050505] border border-gray-800 rounded-xl shadow-2xl p-6 w-[500px] relative">
+            <button className="absolute top-4 right-4 text-gray-500 hover:text-white transition-colors" onClick={() => setShowEnvModal(false)}><X size={20} /></button>
+            <div className="font-bold text-xl text-white mb-6">Environment Variables</div>
+
+            <div className="text-sm mb-6 bg-[#111118] border border-gray-800/50 p-4 rounded-lg text-gray-400 leading-relaxed">
+              Use environment variables in your requests with the syntax <span className="bg-[#1A1A22] border border-gray-700/50 px-1.5 py-0.5 rounded font-mono text-gray-300 mx-1">{"{{VARIABLE_NAME}}"}</span><br />
+              Example: <span className="bg-[#1A1A22] border border-gray-700/50 px-1.5 py-0.5 rounded font-mono text-gray-300 mt-2 inline-block">{"{{BASE_URL}}"}</span><span className="font-mono text-gray-500">/api/users</span>
             </div>
-            <div className="mb-2">
+
+            <div className="mb-6 space-y-2 max-h-60 overflow-y-auto pr-1 custom-scrollbar">
               {Object.entries(envVars).map(([key, value]) => (
-                <div key={key} className="flex items-center gap-2 mb-1">
-                  <input value={key} disabled className="bg-zinc-800 px-2 py-1 rounded w-1/3 text-xs" />
-                  <input value={value} onChange={e => setEnvVars(v => ({ ...v, [key]: e.target.value }))} className="bg-zinc-800 px-2 py-1 rounded w-2/3 text-xs" />
-                  <button className="text-red-400 text-xs" onClick={() => setEnvVars(v => { const nv = { ...v }; delete nv[key]; return nv; })}>Remove</button>
+                <div key={key} className="flex items-center gap-3">
+                  <div className="bg-[#111] border border-gray-800 px-3 py-2 rounded-md w-1/3 text-xs font-mono text-gray-400 truncate" title={key}>{key}</div>
+                  <input value={value} onChange={e => setEnvVars(v => ({ ...v, [key]: e.target.value }))} className="bg-black border border-gray-800 focus:border-gray-600 px-3 py-2 rounded-md w-2/3 text-xs font-mono text-white focus:outline-none transition-colors" />
+                  <button className="text-gray-500 hover:text-red-500 p-1" onClick={() => setEnvVars(v => { const nv = { ...v }; delete nv[key]; return nv; })}>
+                    <X size={14} />
+                  </button>
                 </div>
               ))}
             </div>
-            <div className="flex gap-2 mb-4">
-              <input value={newVarKey} onChange={e => setNewVarKey(e.target.value)} placeholder="Key" className="bg-zinc-800 px-2 py-1 rounded w-1/3 text-xs" />
-              <input value={newVarValue} onChange={e => setNewVarValue(e.target.value)} placeholder="Value" className="bg-zinc-800 px-2 py-1 rounded w-2/3 text-xs" />
-              <button className="text-blue-400 text-xs" onClick={() => {
-                if (newVarKey) {
-                  setEnvVars(v => ({ ...v, [newVarKey]: newVarValue }));
-                  setNewVarKey("");
-                  setNewVarValue("");
-                }
-              }}>Add Variable</button>
+
+            <div className="flex gap-3 mb-8 items-center">
+              <input value={newVarKey} onChange={e => setNewVarKey(e.target.value)} placeholder="Key" className="bg-black border border-gray-800 focus:border-gray-600 px-3 py-2 rounded-md w-1/3 text-xs font-mono text-white focus:outline-none transition-colors" />
+              <input value={newVarValue} onChange={e => setNewVarValue(e.target.value)} placeholder="Value" className="bg-black border border-gray-800 focus:border-gray-600 px-3 py-2 rounded-md w-2/3 text-xs font-mono text-white focus:outline-none transition-colors" />
+              <button
+                className="bg-white text-black hover:bg-gray-200 p-2 rounded-md transition-colors flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={!newVarKey}
+                onClick={() => {
+                  if (newVarKey) {
+                    setEnvVars(v => ({ ...v, [newVarKey]: newVarValue }));
+                    setNewVarKey("");
+                    setNewVarValue("");
+                  }
+                }}
+              >
+                <Plus size={16} />
+              </button>
             </div>
-            <div className="flex gap-2 justify-end">
-              <button className="bg-zinc-700 px-3 py-1 rounded" onClick={() => setShowEnvModal(false)}>Cancel</button>
-              <button className="bg-blue-600 px-3 py-1 rounded" onClick={saveEnvVars}>Save Variables</button>
+
+            <div className="flex gap-4 justify-end items-center">
+              <button className="text-gray-400 hover:text-white text-sm font-medium transition-colors" onClick={() => setShowEnvModal(false)}>Cancel</button>
+              <button className="bg-white text-black hover:bg-gray-200 px-6 py-2 rounded-md text-sm font-bold transition-colors" onClick={saveEnvVars}>Save</button>
             </div>
           </div>
         </div>
       )}
 
       {!showHistoryPreview && (
-        <div className="text-xs text-gray-400 cursor-pointer" onClick={() => setShowHistoryPreview(true)}>
+        <div className="text-xs text-gray-500 hover:text-gray-300 cursor-pointer flex justify-center py-1" onClick={() => setShowHistoryPreview(true)}>
           Show History Preview
         </div>
       )}

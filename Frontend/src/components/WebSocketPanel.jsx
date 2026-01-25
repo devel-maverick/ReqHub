@@ -18,15 +18,15 @@ export default function WebSocketPanel({
     status === "connected"
       ? "connected"
       : status === "connecting"
-      ? "connecting"
-      : "disconnected";
+        ? "connecting"
+        : "disconnected";
 
   const statusColor =
     status === "connected"
       ? "bg-emerald-400"
       : status === "connecting"
-      ? "bg-yellow-400"
-      : "bg-zinc-500";
+        ? "bg-yellow-400"
+        : "bg-zinc-500";
 
   return (
     <div className="flex flex-col h-full bg-black">
@@ -55,22 +55,20 @@ export default function WebSocketPanel({
             {messages.map((m) => (
               <div
                 key={m.id}
-                className={`flex ${
-                  m.type === "out"
+                className={`flex ${m.type === "out"
                     ? "justify-end"
                     : m.type === "in"
-                    ? "justify-start"
-                    : "justify-center"
-                }`}
+                      ? "justify-start"
+                      : "justify-center"
+                  }`}
               >
                 <div
-                  className={`max-w-[70%] rounded-2xl px-3 py-2 text-xs whitespace-pre-wrap ${
-                    m.type === "out"
+                  className={`max-w-[70%] rounded-2xl px-3 py-2 text-xs whitespace-pre-wrap ${m.type === "out"
                       ? "bg-purple-600/80 text-white"
                       : m.type === "in"
-                      ? "bg-zinc-900 border border-zinc-800 text-zinc-100"
-                      : "bg-transparent text-zinc-500 text-[11px]"
-                  }`}
+                        ? "bg-zinc-900 border border-zinc-800 text-zinc-100"
+                        : "bg-transparent text-zinc-500 text-[11px]"
+                    }`}
                 >
                   {m.text}
                 </div>
@@ -79,8 +77,6 @@ export default function WebSocketPanel({
           </div>
         )}
       </div>
-
-      {/* Input */}
       <div className="border-t border-zinc-900 px-4 py-3 flex items-center gap-2 bg-zinc-950/80">
         <input
           value={input}
