@@ -2,7 +2,8 @@ import { motion } from "framer-motion";
 import FAQ from "../components/Faq";
 import { CardHoverEffectDemo } from "../components/ui/CardHoverEffectDemo";
 import { WobbleCardDemo } from "../components/ui/WobbleCardDemo";
-import { Zap, Shield, Globe, Cpu, Key, Wifi, Activity, Terminal, Star, Play, FileCode, Github, ArrowRight, Check } from "lucide-react";
+import { GlowingEffect } from "../components/ui/glowing-effect";
+import { Zap, Shield, Globe, Cpu, Key, Wifi, Activity, Terminal, Star, Play, FileCode, Github, ArrowRight, Check, History } from "lucide-react";
 import { useAuthStore } from "../store/useAuthStore";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useEffect } from "react";
@@ -78,39 +79,13 @@ export default function Home() {
             transition={{ delay: 0.2 }}
             className="relative"
           >
-            <div className="rounded-lg overflow-hidden border border-gray-800 bg-[#0D0D0D] shadow-2xl font-mono text-sm group hover:border-gray-700 transition-colors">
-              <div className="bg-[#111111] px-4 py-3 border-b border-gray-800 flex items-center gap-3">
-                <div className="flex items-center gap-2 bg-black border border-gray-800 rounded px-2 py-1.5 flex-1">
-                  <span className="text-blue-500 font-bold text-xs">GET</span>
-                  <span className="text-gray-300 text-xs truncate">https://api.reqhub.io/v1/users</span>
-                </div>
-                <button className="bg-white text-black px-4 py-1.5 rounded text-xs font-bold hover:bg-gray-200">SEND</button>
-              </div>
-              <div className="p-6 bg-[#0A0A0A] h-[320px] overflow-hidden relative">
-                <div className="flex gap-4 text-xs text-gray-500 mb-4 font-mono">
-                  <span className="text-green-500">Status: 200 OK</span>
-                  <span>Time: 45ms</span>
-                  <span>Size: 1.2KB</span>
-                </div>
-
-                <div className="space-y-1 text-gray-400 text-xs">
-                  <div><span className="text-yellow-500">"status"</span>: <span className="text-green-400">"success"</span>,</div>
-                  <div><span className="text-yellow-500">"data"</span>: [</div>
-                  <div className="pl-4">&#123;</div>
-                  <div className="pl-8"><span className="text-yellow-500">"id"</span>: <span className="text-blue-400">101</span>,</div>
-                  <div className="pl-8"><span className="text-yellow-500">"name"</span>: <span className="text-green-400">"Alex Chen"</span>,</div>
-                  <div className="pl-8"><span className="text-yellow-500">"role"</span>: <span className="text-green-400">"Senior Developer"</span>,</div>
-                  <div className="pl-8"><span className="text-yellow-500">"active"</span>: <span className="text-purple-400">true</span></div>
-                  <div className="pl-4">&#125;,</div>
-                  <div className="pl-4">&#123;</div>
-                  <div className="pl-8"><span className="text-yellow-500">"id"</span>: <span className="text-blue-400">102</span>,</div>
-                  <div className="pl-8"><span className="text-yellow-500">"name"</span>: <span className="text-green-400">"Sarah Jones"</span>,</div>
-                  <div className="pl-8"><span className="text-yellow-500">"role"</span>: <span className="text-green-400">"Product Manager"</span></div>
-                  <div className="pl-4">&#125;</div>
-                  <div>]</div>
-                </div>
-                <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-[#0A0A0A] to-transparent pointer-events-none" />
-              </div>
+            <div className="relative rounded-lg overflow-hidden bg-[#0D0D0D] shadow-2xl group transition-colors">
+              <img
+                src="/hero-api-preview.png"
+                alt="API Preview"
+                className="w-full h-auto object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] to-transparent opacity-50" />
             </div>
             <div className="absolute -inset-4 bg-blue-500/5 rounded-xl blur-3xl -z-10 opacity-30" />
           </motion.div>
@@ -127,93 +102,144 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="md:col-span-2 row-span-2 rounded-md bg-[#111] border border-gray-800 p-8 flex flex-col justify-between hover:border-gray-600 transition-colors group">
-              <div>
-                <div className="p-3 bg-white/5 w-fit rounded-lg mb-6 group-hover:bg-white/10 transition-colors">
-                  <Zap className="w-8 h-8 text-white" />
-                </div>
-                <h3 className="text-3xl font-bold text-white mb-4">Lightning Fast Performance</h3>
-                <p className="text-gray-400 text-lg max-w-md">
-                  Built on a modern stack to ensure your requests fly. No electron bloat, just pure web speed. Instant startup, instant results.
-                </p>
-              </div>
-              <div className="mt-10 h-64 rounded-xl bg-[#050505] border border-gray-800 relative overflow-hidden font-mono text-xs p-4 flex flex-col justify-end">
-                <div className="space-y-1.5 relative z-10">
-                  <div className="flex items-center gap-2 text-gray-500">
-                    <span className="text-green-500">➜</span>
-                    <span>curl -X GET https://api.reqhub.io</span>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Card 1: Lightning Fast Performance + GlobeViz */}
+            <div className="md:col-span-2 md:row-span-2 relative h-full rounded-2xl border border-gray-800 p-1.5">
+              <GlowingEffect
+                spread={40}
+                glow={true}
+                disabled={false}
+                proximity={64}
+                inactiveZone={0.01}
+              />
+              <div className="relative flex h-full flex-col justify-between overflow-hidden rounded-xl bg-[#111] p-6 md:p-8">
+                <div className="relative z-10">
+                  <div className="p-3 bg-white/5 w-fit rounded-lg mb-6 border border-gray-700/50">
+                    <Zap className="w-8 h-8 text-white" />
                   </div>
-                  <div className="text-gray-500">Resolving host... <span className="text-green-500">0ms</span></div>
-                  <div className="text-gray-500">Connecting... <span className="text-green-500">1ms</span></div>
-                  <div className="text-gray-500">TLS Handshake... <span className="text-green-500">2ms</span></div>
-                  <div className="text-white mt-2 font-medium">
-                    <span className="text-blue-500">200 OK</span>
-                    <span className="text-gray-500 ml-2 font-normal">45ms total</span>
-                  </div>
+                  <h3 className="text-3xl font-bold text-white mb-4">Lightning Fast Performance</h3>
+                  <p className="text-gray-400 text-lg max-w-md">
+                    Built on a modern stack to ensure your requests fly. No electron bloat, just pure web speed.
+                  </p>
                 </div>
-
-                <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] z-0 pointer-events-none bg-[length:100%_2px,3px_100%] opacity-20"></div>
-              </div>
-            </div>
-
-            <div className="rounded-md bg-[#111] border border-gray-800 p-8 hover:border-gray-600 transition-colors group">
-              <div className="p-3 bg-white/5 w-fit rounded-lg mb-6 group-hover:bg-white/10 transition-colors">
-                <Globe className="w-6 h-6 text-white" />
-              </div>
-              <h3 className="text-xl font-bold text-white mb-2">WebSocket Support</h3>
-              <p className="text-gray-400">
-                Real-time testing made easy. Connect, send messages, and view streams in one place.
-              </p>
-            </div>
-            <div className="rounded-md bg-[#111] border border-gray-800 p-8 hover:border-gray-600 transition-colors group">
-              <div className="p-3 bg-white/5 w-fit rounded-lg mb-6 group-hover:bg-white/10 transition-colors">
-                <Shield className="w-6 h-6 text-white" />
-              </div>
-              <h3 className="text-xl font-bold text-white mb-2">Secure & Encrypted</h3>
-              <p className="text-gray-400">
-                Your keys never leave your machine. Local-first architecture for maximum security.
-              </p>
-            </div>
-            <div className="rounded-md bg-[#111] border border-gray-800 p-8 hover:border-gray-600 transition-colors group">
-              <div className="p-3 bg-white/5 w-fit rounded-lg mb-6 group-hover:bg-white/10 transition-colors">
-                <Terminal className="w-6 h-6 text-white" />
-              </div>
-              <h3 className="text-xl font-bold text-white mb-2">cURL Import</h3>
-              <p className="text-gray-400">
-                Paste any cURL command and start testing immediately. No manual entry needed.
-              </p>
-            </div>
-            <div className="md:col-span-1 rounded-md bg-[#111] border border-gray-800 p-8 hover:border-gray-600 transition-colors group">
-              <div className="p-3 bg-white/5 w-fit rounded-lg mb-6 group-hover:bg-white/10 transition-colors">
-                <Cpu className="w-6 h-6 text-white" />
-              </div>
-              <h3 className="text-xl font-bold text-white mb-2">Resource Efficient</h3>
-              <p className="text-gray-400">
-                Uses 10x less RAM than Electron-based competitors.
-              </p>
-            </div>
-            <div className="md:col-span-3 rounded-md bg-[#111] border border-gray-800 p-10 flex flex-col md:flex-row items-center gap-10 hover:border-gray-600 transition-colors relative overflow-hidden group">
-              <div className="flex-1 relative z-10">
-                <div className="p-3 bg-white/5 w-fit rounded-lg mb-6 group-hover:bg-white/10 transition-colors">
-                  <Activity className="w-8 h-8 text-white" />
-                </div>
-                <h3 className="text-2xl font-bold text-white mb-4">Real-time History & Metrics</h3>
-                <p className="text-gray-400 text-lg">
-                  Track every request with millisecond precision. View usage patterns, success rates, and latency distribution over time.
-                </p>
-              </div>
-              <div className="flex-1 w-full relative z-10 flex items-end justify-between gap-1 px-4 pb-4 h-full">
-                {[35, 55, 40, 70, 50, 85, 60, 95, 75, 45, 65, 80].map((h, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ height: 0 }}
-                    whileInView={{ height: `${h}%` }}
-                    transition={{ duration: 0.5, delay: i * 0.05 }}
-                    viewport={{ once: true }}
-                    className={`w-full rounded-sm transition-all hover:bg-white/30 ${i === 11 ? 'bg-white shadow-[0_0_10px_rgba(255,255,255,0.5)]' : 'bg-gray-800'}`}
+                <div className="relative h-64 w-full mt-4 rounded-lg overflow-hidden border border-gray-800/50">
+                  <img
+                    src="/lightning-performance.png"
+                    alt="Lightning Fast Performance"
+                    className="w-full h-full object-cover opacity-80 hover:opacity-100 transition-opacity duration-500"
                   />
-                ))}
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#111] via-transparent to-transparent opacity-60"></div>
+                </div>
+              </div>
+            </div>
+
+
+            <div className="relative h-full rounded-2xl border border-gray-800 p-1.5">
+              <GlowingEffect
+                spread={40}
+                glow={true}
+                disabled={false}
+                proximity={64}
+                inactiveZone={0.01}
+              />
+              <div className="relative flex h-full flex-col justify-between overflow-hidden rounded-xl bg-[#111] p-6">
+                <div>
+                  <div className="p-3 bg-white/5 w-fit rounded-lg mb-6 border border-gray-700/50">
+                    <Globe className="w-6 h-6 text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold text-white mb-2">WebSocket Support</h3>
+                  <p className="text-gray-400 text-sm">
+                    Real-time testing made easy. Connect, send messages, and view streams in one place.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Card 3: Secure & Encrypted */}
+            <div className="relative h-full rounded-2xl border border-gray-800 p-1.5">
+              <GlowingEffect
+                spread={40}
+                glow={true}
+                disabled={false}
+                proximity={64}
+                inactiveZone={0.01}
+              />
+              <div className="relative flex h-full flex-col justify-between overflow-hidden rounded-xl bg-[#111] p-6">
+                <div>
+                  <div className="p-3 bg-white/5 w-fit rounded-lg mb-6 border border-gray-700/50">
+                    <Shield className="w-6 h-6 text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold text-white mb-2">Secure & Encrypted</h3>
+                  <p className="text-gray-400 text-sm">
+                    Your keys never leave your machine. Local-first architecture for maximum security.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Card 4: cURL Import */}
+            <div className="relative h-full rounded-2xl border border-gray-800 p-1.5">
+              <GlowingEffect
+                spread={40}
+                glow={true}
+                disabled={false}
+                proximity={64}
+                inactiveZone={0.01}
+              />
+              <div className="relative flex h-full flex-col justify-between overflow-hidden rounded-xl bg-[#111] p-6">
+                <div>
+                  <div className="p-3 bg-white/5 w-fit rounded-lg mb-6 border border-gray-700/50">
+                    <Terminal className="w-6 h-6 text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold text-white mb-2">cURL Import</h3>
+                  <p className="text-gray-400 text-sm">
+                    Paste any cURL command and start testing immediately. No manual entry needed.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Card 5: Resource Efficient */}
+            <div className="relative h-full rounded-2xl border border-gray-800 p-1.5">
+              <GlowingEffect
+                spread={40}
+                glow={true}
+                disabled={false}
+                proximity={64}
+                inactiveZone={0.01}
+              />
+              <div className="relative flex h-full flex-col justify-between overflow-hidden rounded-xl bg-[#111] p-6">
+                <div>
+                  <div className="p-3 bg-white/5 w-fit rounded-lg mb-6 border border-gray-700/50">
+                    <Cpu className="w-6 h-6 text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold text-white mb-2">Resource Efficient</h3>
+                  <p className="text-gray-400 text-sm">
+                    Uses 10x less RAM than Electron-based competitors.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Card 6: Team Collaboration */}
+            <div className="relative h-full rounded-2xl border border-gray-800 p-1.5">
+              <GlowingEffect
+                spread={40}
+                glow={true}
+                disabled={false}
+                proximity={64}
+                inactiveZone={0.01}
+              />
+              <div className="relative flex h-full flex-col justify-between overflow-hidden rounded-xl bg-[#111] p-6">
+                <div>
+                  <div className="p-3 bg-white/5 w-fit rounded-lg mb-6 border border-gray-700/50">
+                    <History className="w-6 h-6 text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold text-white mb-2">Request History</h3>
+                  <p className="text-gray-400 text-sm">
+                    Access your past requests instantly. Search, filter, and replay API calls with a single click.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -273,9 +299,15 @@ export default function Home() {
                 <span className="text-4xl font-bold text-white">€27</span>
                 <span className="text-gray-500">/month</span>
               </div>
-              <a href="/signup" onClick={handleNavigation} className="w-full block text-center py-3 rounded bg-gray-200 text-black font-bold hover:bg-white transition-colors mb-8">
-                Sign up
-              </a>
+              {authUser ? (
+                <button disabled className="w-full block text-center py-3 rounded bg-gray-800 text-gray-400 font-bold mb-8 cursor-not-allowed">
+                  Coming Soon
+                </button>
+              ) : (
+                <a href="/signup" onClick={handleNavigation} className="w-full block text-center py-3 rounded bg-gray-200 text-black font-bold hover:bg-white transition-colors mb-8">
+                  Sign up
+                </a>
+              )}
               <ul className="space-y-4 flex-1">
                 <li className="flex items-start gap-3 text-sm text-gray-300">
                   <Check className="w-5 h-5 text-green-500 shrink-0" />
@@ -300,9 +332,15 @@ export default function Home() {
                 <span className="text-4xl font-bold text-white">€54</span>
                 <span className="text-gray-500">/month</span>
               </div>
-              <a href="/signup" onClick={handleNavigation} className="w-full block text-center py-3 rounded bg-gray-200 text-black font-bold hover:bg-white transition-colors mb-8">
-                Sign up
-              </a>
+              {authUser ? (
+                <button disabled className="w-full block text-center py-3 rounded bg-gray-800 text-gray-400 font-bold mb-8 cursor-not-allowed">
+                  Coming Soon
+                </button>
+              ) : (
+                <a href="/signup" onClick={handleNavigation} className="w-full block text-center py-3 rounded bg-gray-200 text-black font-bold hover:bg-white transition-colors mb-8">
+                  Sign up
+                </a>
+              )}
               <ul className="space-y-4 flex-1">
                 <li className="flex items-start gap-3 text-sm text-gray-300">
                   <Check className="w-5 h-5 text-green-500 shrink-0" />
@@ -331,9 +369,15 @@ export default function Home() {
                 <span className="text-4xl font-bold text-white">€107</span>
                 <span className="text-gray-500">/month</span>
               </div>
-              <a href="/signup" onClick={handleNavigation} className="w-full block text-center py-3 rounded bg-gray-200 text-black font-bold hover:bg-white transition-colors mb-8">
-                Sign up
-              </a>
+              {authUser ? (
+                <button disabled className="w-full block text-center py-3 rounded bg-gray-800 text-gray-400 font-bold mb-8 cursor-not-allowed">
+                  Coming Soon
+                </button>
+              ) : (
+                <a href="/signup" onClick={handleNavigation} className="w-full block text-center py-3 rounded bg-gray-200 text-black font-bold hover:bg-white transition-colors mb-8">
+                  Sign up
+                </a>
+              )}
               <ul className="space-y-4 flex-1">
                 <li className="flex items-start gap-3 text-sm text-gray-300">
                   <Check className="w-5 h-5 text-green-500 shrink-0" />
@@ -372,6 +416,6 @@ export default function Home() {
       </section>
 
       <FAQ />
-    </div>
+    </div >
   );
 }
