@@ -19,34 +19,16 @@ model User {
 model ApiRequest {
   id        Int      @id @default(autoincrement())
   userId    Int
-
-  /* ======================
-     REQUEST SIDE
-  ====================== */
-
   method    String            // GET, POST, PUT...
   url       String            // Full URL
-
-  /* Params tab */
   params    Json?             // ?key=value pairs
-
-  /* Headers tab */
   headers   Json              // Request headers
-
-  /* Authorization tab */
   authType  String?           // none | bearer | basic | apiKey
   authData  Json?             // token / username / apiKey data
-
-  /* Body tab */
   bodyType  String?           // none | raw | form-data | binary
   body      Json?             // raw JSON / form fields
   rawText   String?           // for raw text / XML
   binaryRef String?           // filename or path (optional)
-
-  /* ======================
-     RESPONSE SIDE
-  ====================== */
-
   status     Int
   resHeaders Json
   resBody    Json?
@@ -56,11 +38,6 @@ model ApiRequest {
 
   timeMs     Int
   sizeBytes  Int
-
-  /* ======================
-     META
-  ====================== */
-
   isStarred  Boolean  @default(false)
   createdAt DateTime @default(now())
 

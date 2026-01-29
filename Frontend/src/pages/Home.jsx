@@ -122,9 +122,9 @@ export default function Home() {
                     Built on a modern stack to ensure your requests fly. No electron bloat, just pure web speed.
                   </p>
                 </div>
-                <div className="relative h-64 w-full mt-4 rounded-lg overflow-hidden border border-gray-800/50">
+                <div className="relative h-88 w-full mt-4 rounded-lg overflow-hidden border border-gray-800/50">
                   <img
-                    src="/lightning-performance.png"
+                    src="/api.png"
                     alt="Lightning Fast Performance"
                     className="w-full h-full object-cover opacity-80 hover:opacity-100 transition-opacity duration-500"
                   />
