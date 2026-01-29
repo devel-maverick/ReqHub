@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore";
-
+const API_URL = import.meta.env.VITE_API_URL;
 export default function SignUp() {
   const navigate = useNavigate();
   const { signup, authError } = useAuthStore();
