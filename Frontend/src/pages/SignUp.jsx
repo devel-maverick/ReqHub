@@ -89,7 +89,7 @@ export default function SignUp() {
           <button
             onClick={() =>
             (window.location.href =
-              "http://localhost:3000/api/auth/google")
+              `${API_URL}/api/auth/google`)
             }
             className="w-full border border-gray-800 hover:border-gray-600 hover:bg-gray-900 transition-all py-2 rounded-md mb-3 flex items-center justify-center gap-2 text-gray-300"
           >
@@ -103,7 +103,7 @@ export default function SignUp() {
           <button
             onClick={() =>
             (window.location.href =
-              "http://localhost:3000/api/auth/github")
+              `${API_URL}/api/auth/github`)
             }
             className="w-full border border-gray-800 hover:border-gray-600 hover:bg-gray-900 transition-all py-2 rounded-md flex items-center justify-center gap-2 text-gray-300"
           >
