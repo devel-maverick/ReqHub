@@ -15,7 +15,6 @@ dotenv.config();
 const app = express();
 const server = http.createServer(app);
 
-
 app.use(
   cors({
     origin:
@@ -25,6 +24,7 @@ app.use(
     credentials: true,
   })
 );
+
 
 app.use(express.json());
 app.use(cookieParser());
