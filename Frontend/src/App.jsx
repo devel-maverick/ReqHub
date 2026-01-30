@@ -6,6 +6,7 @@ import Home from "./pages/Home";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import Tester from "./pages/Tester";
+import OAuthSuccess from "./pages/OAuthSuccess";
 import { useAuthStore } from "./store/useAuthStore";
 
 export default function App() {
@@ -20,6 +21,7 @@ export default function App() {
   return (
     <div className="min-h-screen bg-black text-white flex flex-col">
       <Navbar />
+
       <Routes>
         <Route path="/" element={<Home />} />
 
@@ -32,6 +34,8 @@ export default function App() {
           path="/signup"
           element={!authUser ? <SignUp /> : <Navigate to="/tester" />}
         />
+        <Route path="/oauth-success" element={<OAuthSuccess />} />
+
         <Route
           path="/tester"
           element={authUser ? <Tester /> : <Navigate to="/signin" />}

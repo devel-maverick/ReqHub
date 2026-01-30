@@ -84,62 +84,100 @@ router.get("/me", requireAuth, async (req, res) => {
 });
 
 
-router.get("/google", (req, res) => {
-  const url =
-    "https://accounts.google.com/o/oauth2/v2/auth?" +
-    new URLSearchParams({
-      client_id: process.env.GOOGLE_CLIENT_ID,
-      redirect_uri: process.env.GOOGLE_CALLBACK_URL,
-      response_type: "code",
-      scope: "openid email profile",
-    });
+// router.get("/google", (req, res) => {
+//   const url =
+//     "https://accounts.google.com/o/oauth2/v2/auth?" +
+//     new URLSearchParams({
+//       client_id: process.env.GOOGLE_CLIENT_ID,
+//       redirect_uri: process.env.GOOGLE_CALLBACK_URL,
+//       response_type: "code",
+//       scope: "openid email profile",
+//     });
 
-  res.redirect(url);
-});
+//   res.redirect(url);
+// });
 
+// router.get("/google/callback", async (req, res) => {
+//   const { code } = req.query;
+
+//   const tokenRes = await axios.post(
+//     "https://oauth2.googleapis.com/token",
+//     {
+//       client_id: process.env.GOOGLE_CLIENT_ID,
+//       client_secret: process.env.GOOGLE_CLIENT_SECRET,
+//       code,
+//       redirect_uri: process.env.GOOGLE_CALLBACK_URL,
+//       grant_type: "authorization_code",
+//     }
+//   );
+
+//   const { access_token } = tokenRes.data;
+
+//   const profileRes = await axios.get(
+//     "https://www.googleapis.com/oauth2/v2/userinfo",
+//     {
+//       headers: {
+//         Authorization: `Bearer ${access_token}`,
+//       },
+//     }
+//   );
+
+//   const { email, name } = profileRes.data;
+
+//   let user = await prisma.user.findUnique({ where: { email } });
+
+//   if (!user) {
+//     user = await prisma.user.create({
+//       data: {
+//         email,
+//         name,
+//         provider: "google",
+//       },
+//     });
+//   }
+
+//   generateToken(user.id, res);
+
+//   res.redirect(`${process.env.FRONTEND_URL}/tester`);
+// ;
+// });
 router.get("/google/callback", async (req, res) => {
-  const { code } = req.query;
+  try {
+    const { code } = req.query;
 
-  const tokenRes = await axios.post(
-    "https://oauth2.googleapis.com/token",
-    {
+    const tokenRes = await axios.post("https://oauth2.googleapis.com/token", {
       client_id: process.env.GOOGLE_CLIENT_ID,
       client_secret: process.env.GOOGLE_CLIENT_SECRET,
       code,
       redirect_uri: process.env.GOOGLE_CALLBACK_URL,
       grant_type: "authorization_code",
-    }
-  );
-
-  const { access_token } = tokenRes.data;
-
-  const profileRes = await axios.get(
-    "https://www.googleapis.com/oauth2/v2/userinfo",
-    {
-      headers: {
-        Authorization: `Bearer ${access_token}`,
-      },
-    }
-  );
-
-  const { email, name } = profileRes.data;
-
-  let user = await prisma.user.findUnique({ where: { email } });
-
-  if (!user) {
-    user = await prisma.user.create({
-      data: {
-        email,
-        name,
-        provider: "google",
-      },
     });
+
+    const { access_token } = tokenRes.data;
+
+    const profileRes = await axios.get(
+      "https://www.googleapis.com/oauth2/v2/userinfo",
+      {
+        headers: { Authorization: `Bearer ${access_token}` },
+      }
+    );
+
+    const { email, name } = profileRes.data;
+
+    let user = await prisma.user.findUnique({ where: { email } });
+    if (!user) {
+      user = await prisma.user.create({
+        data: { email, name, provider: "google" },
+      });
+    }
+
+    generateToken(user.id, res);
+
+    res.redirect(`${process.env.FRONTEND_URL}/oauth-success`);
+  } catch (err) {
+    console.error("Google OAuth Error:", err.response?.data || err.message);
+    res.status(500).json({ message: "Google OAuth failed" });
   }
-
-  generateToken(user.id, res);
-
-  res.redirect(`${process.env.FRONTEND_URL}/tester`);
-;
 });
 
 
