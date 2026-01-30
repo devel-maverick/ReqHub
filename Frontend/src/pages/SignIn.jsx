@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore";
-const API_URL = import.meta.env.VITE_API_URL;
 export default function SignIn() {
   const navigate = useNavigate();
   const { login, authError } = useAuthStore();
@@ -81,10 +80,7 @@ export default function SignIn() {
         {/* OAUTH */}
         <div className="space-y-3">
           <button
-            onClick={() =>
-            (window.location.href =
-              `${API_URL}/api/auth/google`)
-            }
+            onClick={() => (window.location.href = "/api/auth/google")}
             className="w-full border border-gray-800 hover:border-gray-600 hover:bg-gray-900 transition-all py-2 rounded-md flex items-center justify-center gap-2 text-gray-300"
           >
             <img
@@ -95,10 +91,7 @@ export default function SignIn() {
           </button>
 
           <button
-            onClick={() =>
-            (window.location.href =
-              `${API_URL}/api/auth/github`)
-            }
+            onClick={() => (window.location.href = "/api/auth/github")}
             className="w-full border border-gray-800 hover:border-gray-600 hover:bg-gray-900 transition-all py-2 rounded-md flex items-center justify-center gap-2 text-gray-300"
           >
             <img
