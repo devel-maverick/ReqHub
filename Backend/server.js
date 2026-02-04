@@ -37,16 +37,12 @@ app.use("/api/auth", authRoutes);
 app.use("/api/request", requestRoutes);
 app.use("/api/history", historyRoutes);
 app.use("/api/star", starRoutes);
-
-// Serve static files from Frontend/dist
 const staticPath = path.join(__dirname, "../Frontend/dist");
-console.log("📁 Serving static files from:", staticPath);
+console.log("Serving static files from:", staticPath);
 app.use(express.static(staticPath));
-
-// Handle client-side routing - send index.html for all non-API routes
 app.use((req, res) => {
   const indexPath = path.join(__dirname, "../Frontend/dist/index.html");
-  console.log("📄 Serving index.html for:", req.url);
+  console.log("Serving index.html for:", req.url);
   res.sendFile(indexPath);
 });
 
