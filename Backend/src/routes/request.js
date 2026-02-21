@@ -74,7 +74,6 @@ router.post("/", requireAuth, async (req, res) => {
       url,
       params,
       headers,
-      family: 4,
       validateStatus: () => true,
     };
 
@@ -144,8 +143,6 @@ router.post("/", requireAuth, async (req, res) => {
         sizeBytes,
       },
     });
-
-    // Update cookie jar from response
     storeResponseCookies(req.user.id, url, response.headers["set-cookie"]);
 
 
