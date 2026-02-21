@@ -58,9 +58,9 @@ export default function HistoryPanel({ setActiveRequest, setProtocol, reloadKey 
             className="w-full mb-3 bg-black border border-gray-800 focus:border-gray-700 text-sm p-2 rounded outline-none transition-colors"
           />
           {filteredHistory.length === 0 && <div className="text-xs text-gray-500 p-2">No history found.</div>}
-          {filteredHistory.map((item, i) => (
+          {filteredHistory.map((item) => (
             <div
-              key={i}
+              key={item.id}
               onClick={() => {
                 const proto = item.method === "WS" ? "WebSocket" : "HTTP";
                 setProtocol && setProtocol(proto);
@@ -115,9 +115,9 @@ export default function HistoryPanel({ setActiveRequest, setProtocol, reloadKey 
             className="w-full mb-3 bg-black border border-gray-800 focus:border-gray-700 text-sm p-2 rounded outline-none transition-colors"
           />
           {filteredSaved.length === 0 && <div className="text-xs text-gray-500 p-2">No saved requests.</div>}
-          {filteredSaved.map((item, i) => (
+          {filteredSaved.map((item) => (
             <div
-              key={i}
+              key={item.id}
               onClick={() => {
                 setProtocol && setProtocol("HTTP");
                 setActiveRequest(item);
@@ -128,20 +128,36 @@ export default function HistoryPanel({ setActiveRequest, setProtocol, reloadKey 
               <div className="text-sm text-gray-300 truncate flex-1 font-mono" title={item.url}>{item.url}</div>
               <button
                 className="mr-2 text-gray-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity z-10"
-                title="Remove"
+                title="Remove from Saved"
                 onClick={async e => {
                   e.stopPropagation();
                   try {
-                    await axiosInstance.delete(`/history/${item.id}`);
-                    await loadLists();
+                    await axiosInstance.patch(`/star/star/${item.id}`);
+                    axiosInstance.get("/history").then(res => setHistoryList(res.data)).catch(() => setHistoryList([]));
+                    axiosInstance.get("/star").then(res => setSavedList(res.data)).catch(() => setSavedList([]));
                   } catch {
-                    alert("Failed to delete saved item");
+                    alert("Failed to remove saved item");
                   }
                 }}
               >
                 <X size={14} />
               </button>
-              <div className="ml-1"><Star size={14} className="fill-white text-white" /></div>
+              <div className="ml-1">
+                <Star
+                  size={14}
+                  className="fill-white text-white cursor-pointer"
+                  onClick={async (e) => {
+                    e.stopPropagation();
+                    try {
+                      await axiosInstance.patch(`/star/star/${item.id}`);
+                      axiosInstance.get("/history").then(res => setHistoryList(res.data)).catch(() => setHistoryList([]));
+                      axiosInstance.get("/star").then(res => setSavedList(res.data)).catch(() => setSavedList([]));
+                    } catch {
+                      alert("Failed to toggle star");
+                    }
+                  }}
+                />
+              </div>
             </div>
           ))}
         </>
