@@ -74,6 +74,7 @@ router.post("/", requireAuth, async (req, res) => {
       url,
       params,
       headers,
+      family: 4,
       validateStatus: () => true,
     };
 

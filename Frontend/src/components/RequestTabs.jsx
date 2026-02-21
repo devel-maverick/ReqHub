@@ -1,6 +1,7 @@
 
 import { useState } from "react";
 import axiosInstance from "../api/axios";
+import CodeEditor from '@uiw/react-textarea-code-editor';
 
 export default function RequestTabs({ request, setRequest }) {
   const [tab, setTab] = useState("params");
@@ -148,11 +149,16 @@ export default function RequestTabs({ request, setRequest }) {
       )}
 
       {tab === "body" && (
-        <textarea
+        <CodeEditor
           value={request.body}
-          onChange={e => setRequest({ ...request, body: e.target.value })}
+          language="json"
           placeholder="JSON Body"
-          className="w-full h-32 bg-black border border-gray-800 p-2 rounded text-sm font-mono text-white focus:outline-none focus:border-gray-700 transition-colors"
+          onChange={(e) => setRequest({ ...request, body: e.target.value })}
+          padding={15}
+          className="w-full h-32 bg-[#050505] border border-gray-800 rounded text-sm font-mono focus-within:border-gray-700 transition-colors overflow-auto"
+          style={{
+            fontFamily: 'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
+          }}
         />
       )}
     </div>
