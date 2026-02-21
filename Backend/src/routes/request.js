@@ -160,9 +160,15 @@ router.post("/", requireAuth, async (req, res) => {
       sizeBytes,
     });
   } catch (error) {
+    let errorMessage = error.message;
+    if (error.name === 'AggregateError') {
+      errorMessage = error.errors.map(e => e.message).join(", ");
+    } else if (!errorMessage) {
+      errorMessage = String(error);
+    }
     res.status(500).json({
       message: "Request execution failed",
-      error: error.message,
+      error: errorMessage,
     });
   }
 });
