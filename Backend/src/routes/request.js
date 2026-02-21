@@ -83,11 +83,25 @@ router.post("/", requireAuth, async (req, res) => {
       } else if (bodyType === "form-data") {
         axiosConfig.data = body;
       } else if (bodyType === "json") {
-        axiosConfig.data = body;
+        let parsedData = body;
+        if (typeof body === "string") {
+          try {
+            parsedData = JSON.parse(body);
+          } catch (e) {
+          }
+        }
+        axiosConfig.data = parsedData;
+
+        const hasContentType = Object.keys(axiosConfig.headers || {}).some(
+          (k) => k.toLowerCase() === "content-type"
+        );
+        if (!hasContentType) {
+          axiosConfig.headers = axiosConfig.headers || {};
+          axiosConfig.headers["Content-Type"] = "application/json";
+        }
       }
     }
 
-    // Authorization handling
     if (authType === "bearer" && authData?.token) {
       axiosConfig.headers.Authorization = `Bearer ${authData.token}`;
     }
@@ -98,7 +112,6 @@ router.post("/", requireAuth, async (req, res) => {
         password: authData.password || "",
       };
     }
-    // Attach cookies from our simple jar (if any)
     axiosConfig.headers = applyCookiesToRequest(req.user.id, url, axiosConfig.headers || {});
 
     const startTime = Date.now();

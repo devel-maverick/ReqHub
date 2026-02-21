@@ -9,62 +9,72 @@ import { generateToken } from "../lib/utils.js";
 const router = express.Router();
 
 router.post("/register", async (req, res) => {
-  const { name, email, password } = req.body;
+  try {
+    const { name, email, password } = req.body;
 
-  if (!email || !password) {
-    return res.status(400).json({ message: "Email & password required" });
-  }
+    if (!email || !password) {
+      return res.status(400).json({ message: "Email & password required" });
+    }
 
-  const existingUser = await prisma.user.findUnique({
-    where: { email },
-  });
-
-  if (existingUser) {
-    return res.status(400).json({
-      message: `Account already exists via ${existingUser.provider}`,
+    const existingUser = await prisma.user.findUnique({
+      where: { email },
     });
+
+    if (existingUser) {
+      return res.status(400).json({
+        message: `Account already exists via ${existingUser.provider}`,
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const user = await prisma.user.create({
+      data: {
+        name,
+        email,
+        password: hashedPassword,
+        provider: "local",
+      },
+    });
+
+    generateToken(user.id, res);
+
+    res.json({
+      message: "Registered successfully",
+      user: { id: user.id, email: user.email },
+    });
+  } catch (error) {
+    console.error("Register error:", error);
+    res.status(500).json({ message: "Internal server error", error: error.message });
   }
-
-  const hashedPassword = await bcrypt.hash(password, 10);
-
-  const user = await prisma.user.create({
-    data: {
-      name,
-      email,
-      password: hashedPassword,
-      provider: "local",
-    },
-  });
-
-  generateToken(user.id, res);
-
-  res.json({
-    message: "Registered successfully",
-    user: { id: user.id, email: user.email },
-  });
 });
 
 
 router.post("/login", async (req, res) => {
-  const { email, password } = req.body;
+  try {
+    const { email, password } = req.body;
 
-  const user = await prisma.user.findUnique({ where: { email } });
+    const user = await prisma.user.findUnique({ where: { email } });
 
-  if (!user || user.provider !== "local") {
-    return res.status(400).json({ message: "Invalid credentials" });
+    if (!user || user.provider !== "local") {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+
+    const isValid = await bcrypt.compare(password, user.password);
+    if (!isValid) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+
+    generateToken(user.id, res);
+
+    res.json({
+      message: "Login successful",
+      user: { id: user.id, email: user.email },
+    });
+  } catch (error) {
+    console.error("Login error:", error);
+    res.status(500).json({ message: "Internal server error", error: error.message });
   }
-
-  const isValid = await bcrypt.compare(password, user.password);
-  if (!isValid) {
-    return res.status(400).json({ message: "Invalid credentials" });
-  }
-
-  generateToken(user.id, res);
-
-  res.json({
-    message: "Login successful",
-    user: { id: user.id, email: user.email },
-  });
 });
 
 
