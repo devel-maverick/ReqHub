@@ -1,4 +1,4 @@
-# 🚀 ReqHub – API Testing Platform
+#  ReqHub – API Testing Platform
 
 ReqHub is a full-stack API testing web application inspired by Postman, designed to help developers test, debug, and manage HTTP and WebSocket APIs from a modern, user-friendly interface.
 
