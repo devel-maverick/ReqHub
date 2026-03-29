@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 function prettyJsonWithLines(json) {
-  const str = typeof json === "str"
+  const str = typeof json === "string" ? json : JSON.stringify(json, null, 2);
   const highlightLine = (line) => {
     const keyMatch = line.match(/^(\s*)(".*?")(: )/);
     if (keyMatch) {
