@@ -59,7 +59,6 @@ export default function Navbar() {
             <Github size={20} />
           </a>
 
-          {/* MOBILE MENU */}
           <motion.button whileTap={{ scale: 0.9 }} className="md:hidden text-gray-400 hover:text-white" onClick={() => setMobileOpen(!mobileOpen)}>
             <Menu />
           </motion.button>
@@ -90,7 +89,6 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* MOBILE MENU */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="md:hidden px-6 py-4 space-y-3 bg-black border-t border-gray-800">

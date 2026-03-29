@@ -1,11 +1,8 @@
 import React, { useState } from "react";
 
 function prettyJsonWithLines(json) {
-  const str = typeof json === "string" ? json : JSON.stringify(json, null, 2);
-
-  // Basic tokenization for syntax highlighting
+  const str = typeof json === "str"
   const highlightLine = (line) => {
-    // Match "key": ...
     const keyMatch = line.match(/^(\s*)(".*?")(: )/);
     if (keyMatch) {
       const indent = keyMatch[1];
@@ -41,7 +38,6 @@ function prettyJsonWithLines(json) {
       );
     }
 
-    // Match string values in array (e.g. "value",)
     const stringMatch = line.match(/^(\s*)(".*?")(,?)$/);
     if (stringMatch) {
       return (
@@ -53,7 +49,6 @@ function prettyJsonWithLines(json) {
       );
     }
 
-    // Default (braces, brackets)
     return <span className="text-white">{line}</span>;
   };
 
