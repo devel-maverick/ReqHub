@@ -1,8 +1,8 @@
 #  ReqHub – API Testing Platform
 
-ReqHub is a full-stack API testing web application inspired by Postman, designed to help developers test, debug, and manage HTTP and WebSocket APIs from a modern, user-friendly interface.
+ReqHub is a full-stack API testing web application inspired by Postman, designed to help developers test, debug, and manage HTTP APIs from a modern, user-friendly interface.
 
-It provides secure authentication, request history, environment variables, and real-time WebSocket communication in a single dashboard.
+It provides secure authentication, request history,and environment variables in a single dashboard.
 
 <img width="2660" height="1276" alt="image" src="https://github.com/user-attachments/assets/12e500d6-9d06-4de5-8e08-940e9961b21c" />
 
@@ -14,7 +14,6 @@ It provides secure authentication, request history, environment variables, and r
 - **HTTP Methods:** Support for GET, POST, PUT, DELETE, and more.
 - **Request Configuration:** Advanced editor for Headers, Query Parameters, and Request Body (JSON).
 - **Response Viewer:** JSON response viewer with syntax highlighting and formatting.
-- **WebSocket Support:** Real-time WebSocket connection and message sending.
 
 ### 🔐 Authentication & Security
 - **Multiple Auth Providers:** Email/Password (JWT), Google OAuth, and GitHub OAuth.
@@ -91,7 +90,7 @@ Install and run frontend:
 
 - Built a Postman-like API testing tool from scratch
 
-- Supports both HTTP and WebSocket communication
+- Supports Http Requests
 
 - Secure authentication and session handling
 
