@@ -4,7 +4,10 @@ ReqHub is a full-stack API testing web application inspired by Postman, designed
 
 It provides secure authentication, request history,and environment variables in a single dashboard.
 
-<img width="2660" height="1276" alt="image" src="https://github.com/user-attachments/assets/12e500d6-9d06-4de5-8e08-940e9961b21c" />
+
+<img width="1511" height="857" alt="Screenshot 2026-03-29 at 3 32 26 PM" src="https://github.com/user-attachments/assets/a291b21b-b5a1-4ecb-8cac-86ac78de8429" />
+
+
 
 ---
 
