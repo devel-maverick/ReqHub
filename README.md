@@ -44,7 +44,6 @@ It provides secure authentication, request history,and environment variables in 
 - **Runtime:** Node.js
 - **Framework:** Express.js
 - **Database:** PostgreSQL with Prisma ORM
-- **Real-time:** WebSockets (`ws` library)
 - **Auth:** JWT, Passport.js (Google & GitHub OAuth)
 
 ### **Deployment**
