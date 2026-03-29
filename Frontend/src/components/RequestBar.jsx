@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { PanelLeftClose, X, Wifi, Plus } from "lucide-react";
+import { PanelLeftClose, X, Plus } from "lucide-react";
 import axiosInstance from "../api/axios";
 
 export default function RequestBar({
@@ -7,10 +7,6 @@ export default function RequestBar({
   setRequest,
   onSend,
   toggleHistory,
-  protocol,
-  setProtocol,
-  onConnect,
-  isWsConnected,
   envVars,
   setEnvVars,
 }) {
@@ -21,7 +17,7 @@ export default function RequestBar({
   const [newVarKey, setNewVarKey] = useState("");
   const [newVarValue, setNewVarValue] = useState("");
   const [tabs, setTabs] = useState([
-    { id: 1, method: "GET", url: "", protocol: "HTTP" }
+    { id: 1, method: "GET", url: "" }
   ]);
   const [activeTab, setActiveTab] = useState(1);
 
@@ -31,11 +27,10 @@ export default function RequestBar({
   const addTab = () => {
     const newId = tabs.length ? Math.max(...tabs.map(t => t.id)) + 1 : 1;
     const active = tabs.find(t => t.id === activeTab);
-    const baseProtocol = active?.protocol || "HTTP";
     const baseMethod = active?.method || "GET";
     setTabs([
       ...tabs,
-      { id: newId, method: baseMethod, url: "", protocol: baseProtocol },
+      { id: newId, method: baseMethod, url: "" },
     ]);
     setActiveTab(newId);
   };
@@ -58,22 +53,14 @@ export default function RequestBar({
     setRequest({ ...request, [field]: value });
   };
 
-  const handleProtocolChange = (e) => {
-    const value = e.target.value;
-    setProtocol?.(value);
-    setTabs(tabs.map(tab =>
-      tab.id === activeTab ? { ...tab, protocol: value } : tab
-    ));
-  };
+
 
   const tabWidth = Math.max(120, 220 - tabs.length * 15);
 
   useEffect(() => {
     const tab = tabs.find(t => t.id === activeTab);
     if (tab) {
-      const tabProtocol = tab.protocol || "HTTP";
       setRequest({ method: tab.method, url: tab.url });
-      setProtocol?.(tabProtocol);
     }
   }, [activeTab, tabs]);
 
@@ -116,8 +103,6 @@ export default function RequestBar({
           {/* Tabs */}
           <div className="flex items-center overflow-x-auto" style={{ maxWidth: "60vw" }}>
             {tabs.map(tab => {
-              const tabProtocol = tab.protocol || "HTTP";
-              const tabLabel = tabProtocol === "WebSocket" ? "WS" : tab.method;
               return (
                 <div
                   key={tab.id}
@@ -125,7 +110,7 @@ export default function RequestBar({
                   style={{ minWidth: tabWidth, maxWidth: tabWidth }}
                   onClick={() => switchTab(tab.id)}
                 >
-                  <span className="mr-2 text-xs font-mono text-blue-500 font-bold">{tabLabel}</span>
+                  <span className="mr-2 text-xs font-mono text-blue-500 font-bold">{tab.method}</span>
                   <span className="truncate text-xs" style={{ maxWidth: tabWidth - 40 }}>{tab.url || "New Request"}</span>
                   {tabs.length > 1 && (
                     <button className="ml-2 text-gray-600 hover:text-white" onClick={e => { e.stopPropagation(); closeTab(tab.id); }}>
@@ -150,28 +135,17 @@ export default function RequestBar({
       </div>
 
       <div className="flex gap-2">
-
         <select
-          value={protocol}
-          onChange={handleProtocolChange}
-          className="bg-black border border-gray-800 hover:border-gray-700 px-2 rounded text-sm focus:outline-none focus:border-gray-600 transition-colors"
+          value={request.method}
+          onChange={(e) => updateRequest("method", e.target.value)}
+          className="bg-black border border-gray-800 hover:border-gray-700 px-2 rounded text-sm font-mono focus:outline-none focus:border-gray-600 transition-colors"
         >
-          <option value="HTTP">HTTP</option>
-          <option value="WebSocket">WS</option>
+          <option>GET</option>
+          <option>POST</option>
+          <option>PUT</option>
+          <option>DELETE</option>
+          <option>PATCH</option>
         </select>
-
-        {protocol === "HTTP" && (
-          <select
-            value={request.method}
-            onChange={(e) => updateRequest("method", e.target.value)}
-            className="bg-black border border-gray-800 hover:border-gray-700 px-2 rounded text-sm font-mono focus:outline-none focus:border-gray-600 transition-colors"
-          >
-            <option>GET</option>
-            <option>POST</option>
-            <option>PUT</option>
-            <option>DELETE</option>
-          </select>
-        )}
 
         <input
           value={request.url}
@@ -181,14 +155,10 @@ export default function RequestBar({
         />
 
         <button
-          onClick={protocol === "WebSocket" ? onConnect : onSend}
+          onClick={onSend}
           className="bg-white text-black border border-white hover:bg-gray-200 px-5 py-1 rounded text-sm font-medium transition-colors"
         >
-          {protocol === "WebSocket"
-            ? isWsConnected
-              ? "Disconnect"
-              : "Connect"
-            : "Send"}
+          Send
         </button>
       </div>
 

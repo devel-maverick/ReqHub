@@ -3,7 +3,7 @@ import FAQ from "../components/Faq";
 import { CardHoverEffectDemo } from "../components/ui/CardHoverEffectDemo";
 import { WobbleCardDemo } from "../components/ui/WobbleCardDemo";
 import { GlowingEffect } from "../components/ui/glowing-effect";
-import { Zap, Shield, Globe, Cpu, Key, Wifi, Activity, Terminal, Star, Play, FileCode, Github, ArrowRight, Check, History } from "lucide-react";
+import { Zap, Shield, Globe, Cpu, Key, Activity, Terminal, Star, Play, FileCode, Github, ArrowRight, Check, History, Settings } from "lucide-react";
 import { useAuthStore } from "../store/useAuthStore";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useEffect } from "react";
@@ -44,8 +44,7 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               className="inline-flex items-center gap-2 mb-8 px-4 py-2 rounded-lg bg-[#111111] border border-gray-800 text-sm text-gray-300 font-mono hover:border-gray-600 transition-colors"
             >
-              <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
-              <span>NEW WebSocket Support Released!</span>
+              <span>Fast & Lightweight API Client</span>
             </motion.div>
 
             <h1 className="text-5xl md:text-7xl font-bold mb-8 leading-[1.1] tracking-tight">
@@ -55,7 +54,7 @@ export default function Home() {
             </h1>
 
             <p className="text-gray-400 mb-10 text-xl md:text-2xl max-w-lg font-light leading-relaxed">
-              Open-source, ultra-fast API client for HTTP & WebSockets. Debug faster, together.
+              Open-source, ultra-fast API client for HTTP. Debug faster, together.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 mb-20">
@@ -145,11 +144,11 @@ export default function Home() {
               <div className="relative flex h-full flex-col justify-between overflow-hidden rounded-xl bg-[#111] p-6">
                 <div>
                   <div className="p-3 bg-white/5 w-fit rounded-lg mb-6 border border-gray-700/50">
-                    <Globe className="w-6 h-6 text-white" />
+                    <Settings className="w-6 h-6 text-white" />
                   </div>
-                  <h3 className="text-xl font-bold text-white mb-2">WebSocket Support</h3>
+                  <h3 className="text-xl font-bold text-white mb-2">Environment Variables</h3>
                   <p className="text-gray-400 text-sm">
-                    Real-time testing made easy. Connect, send messages, and view streams in one place.
+                    Manage variables per environment. Switch between dev, staging, and production seamlessly.
                   </p>
                 </div>
               </div>

@@ -27,7 +27,7 @@ export default function SignUp() {
           </h2>
 
           <ul className="space-y-4 text-gray-400 text-sm">
-            <li className="flex items-center gap-2"><span className="text-white">⚡</span> Test REST & WebSocket APIs</li>
+            <li className="flex items-center gap-2"><span className="text-white">⚡</span> Test REST APIs instantly</li>
             <li className="flex items-center gap-2"><span className="text-white">🕘</span> Save & replay request history</li>
             <li className="flex items-center gap-2"><span className="text-white">🔐</span> Secure auth & environments</li>
             <li className="flex items-center gap-2"><span className="text-white">🚀</span> Built for serious developers</li>

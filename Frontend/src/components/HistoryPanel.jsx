@@ -2,12 +2,14 @@ import React, { useState, useEffect } from "react";
 import { Star, X } from "lucide-react";
 import axiosInstance from "../api/axios";
 
-export default function HistoryPanel({ setActiveRequest, setProtocol, reloadKey }) {
+export default function HistoryPanel({ setActiveRequest, reloadKey }) {
   const [activeTab, setActiveTab] = useState("history");
   const [searchHistory, setSearchHistory] = useState("");
   const [searchSaved, setSearchSaved] = useState("");
   const [historyList, setHistoryList] = useState([]);
   const [savedList, setSavedList] = useState([]);
+
+  const toArray = (data) => Array.isArray(data) ? data : [];
 
   const loadLists = async () => {
     try {
@@ -15,8 +17,8 @@ export default function HistoryPanel({ setActiveRequest, setProtocol, reloadKey 
         axiosInstance.get("/history"),
         axiosInstance.get("/star"),
       ]);
-      setHistoryList(historyRes.data || []);
-      setSavedList(savedRes.data || []);
+      setHistoryList(toArray(historyRes.data));
+      setSavedList(toArray(savedRes.data));
     } catch {
       setHistoryList([]);
       setSavedList([]);
@@ -62,8 +64,6 @@ export default function HistoryPanel({ setActiveRequest, setProtocol, reloadKey 
             <div
               key={item.id}
               onClick={() => {
-                const proto = item.method === "WS" ? "WebSocket" : "HTTP";
-                setProtocol && setProtocol(proto);
                 setActiveRequest(item);
               }}
               className="p-2 mb-1 rounded cursor-pointer hover:bg-gray-900 flex items-center group relative border border-transparent hover:border-gray-800 transition-all"
@@ -93,8 +93,8 @@ export default function HistoryPanel({ setActiveRequest, setProtocol, reloadKey 
                     e.stopPropagation();
                     try {
                       await axiosInstance.patch(`/star/star/${item.id}`);
-                      axiosInstance.get("/history").then(res => setHistoryList(res.data)).catch(() => setHistoryList([]));
-                      axiosInstance.get("/star").then(res => setSavedList(res.data)).catch(() => setSavedList([]));
+                      axiosInstance.get("/history").then(res => setHistoryList(toArray(res.data))).catch(() => setHistoryList([]));
+                      axiosInstance.get("/star").then(res => setSavedList(toArray(res.data))).catch(() => setSavedList([]));
                     } catch (err) {
                       alert("Failed to toggle star");
                     }
@@ -119,7 +119,6 @@ export default function HistoryPanel({ setActiveRequest, setProtocol, reloadKey 
             <div
               key={item.id}
               onClick={() => {
-                setProtocol && setProtocol("HTTP");
                 setActiveRequest(item);
               }}
               className="p-2 mb-1 rounded cursor-pointer hover:bg-gray-900 flex items-center group relative border border-transparent hover:border-gray-800 transition-all"
@@ -133,8 +132,8 @@ export default function HistoryPanel({ setActiveRequest, setProtocol, reloadKey 
                   e.stopPropagation();
                   try {
                     await axiosInstance.patch(`/star/star/${item.id}`);
-                    axiosInstance.get("/history").then(res => setHistoryList(res.data)).catch(() => setHistoryList([]));
-                    axiosInstance.get("/star").then(res => setSavedList(res.data)).catch(() => setSavedList([]));
+                    axiosInstance.get("/history").then(res => setHistoryList(toArray(res.data))).catch(() => setHistoryList([]));
+                    axiosInstance.get("/star").then(res => setSavedList(toArray(res.data))).catch(() => setSavedList([]));
                   } catch {
                     alert("Failed to remove saved item");
                   }
@@ -150,8 +149,8 @@ export default function HistoryPanel({ setActiveRequest, setProtocol, reloadKey 
                     e.stopPropagation();
                     try {
                       await axiosInstance.patch(`/star/star/${item.id}`);
-                      axiosInstance.get("/history").then(res => setHistoryList(res.data)).catch(() => setHistoryList([]));
-                      axiosInstance.get("/star").then(res => setSavedList(res.data)).catch(() => setSavedList([]));
+                      axiosInstance.get("/history").then(res => setHistoryList(toArray(res.data))).catch(() => setHistoryList([]));
+                      axiosInstance.get("/star").then(res => setSavedList(toArray(res.data))).catch(() => setSavedList([]));
                     } catch {
                       alert("Failed to toggle star");
                     }

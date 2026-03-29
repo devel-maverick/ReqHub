@@ -9,7 +9,7 @@ const faqs = [
   },
   {
     q: "Does it WebSockets?",
-    a: "Absolutely. You can test REST and WebSocket connections from a single unified interface without switching tools."
+    a: "No. You can test REST APIs only. But we are working on it."
   },
   {
     q: "How secure is my data?",

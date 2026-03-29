@@ -10,7 +10,7 @@ import authRoutes from "./src/routes/auth.js";
 import requestRoutes from "./src/routes/request.js";
 import historyRoutes from "./src/routes/history.js";
 import starRoutes from "./src/routes/star.js";
-import { setupWebSocket } from "./src/lib/wsserver.js";
+
 
 dotenv.config();
 
@@ -46,7 +46,7 @@ app.use((req, res) => {
   res.sendFile(indexPath);
 });
 
-setupWebSocket(server);
+
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   console.log(`Backend running on port ${PORT}`);
