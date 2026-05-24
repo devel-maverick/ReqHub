@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import axiosInstance from "../api/axios";
 import RequestBar from "../components/RequestBar";
 import HistoryPanel from "../components/HistoryPanel";
@@ -19,31 +19,16 @@ export default function Tester() {
   const [response, setResponse] = useState(null);
   const [meta, setMeta] = useState(null);
 
-  const [envVars, setEnvVars] = useState(() => {
-    try {
-      return JSON.parse(localStorage.getItem("envVars") || "{}");
-    } catch {
-      return {};
-    }
-  });
-
-  const substituteEnvVars = (str) => {
-    if (!str || typeof str !== "string") return str;
-    return str.replace(/\{\{(\w+)\}\}/g, (_, key) => envVars[key] || "");
-  };
-
   const sendRequest = async () => {
     if (!activeRequest.url) return;
 
-    const substitutedUrl = substituteEnvVars(activeRequest.url);
-
     const params = (activeRequest.params ?? [])
       .filter(p => p.key)
-      .reduce((acc, p) => ({ ...acc, [substituteEnvVars(p.key)]: substituteEnvVars(p.value) }), {});
+      .reduce((acc, p) => ({ ...acc, [p.key]: p.value }), {});
 
     let headers = (activeRequest.headers ?? [])
       .filter(h => h.key)
-      .reduce((acc, h) => ({ ...acc, [substituteEnvVars(h.key)]: substituteEnvVars(h.value) }), {});
+      .reduce((acc, h) => ({ ...acc, [h.key]: h.value }), {});
 
     const authType = activeRequest.authType;
     const authData = activeRequest.authData || {};
@@ -51,13 +36,13 @@ export default function Tester() {
     if (authType === "bearer" && authData.token) {
       headers = {
         ...headers,
-        Authorization: `Bearer ${substituteEnvVars(authData.token)}`,
+        Authorization: `Bearer ${authData.token}`,
       };
     }
 
     if (authType === "basic" && authData.username) {
-      const u = substituteEnvVars(authData.username);
-      const p = substituteEnvVars(authData.password || "");
+      const u = authData.username;
+      const p = authData.password || "";
       const raw = `${u}:${p}`;
       const encoded = btoa(raw);
       headers = {
@@ -68,14 +53,14 @@ export default function Tester() {
 
     let finalBody = null;
     if (activeRequest.body) {
-      finalBody = substituteEnvVars(activeRequest.body);
+      finalBody = activeRequest.body;
     }
 
     const start = performance.now();
     try {
       const res = await axiosInstance.post("/request", {
         method: activeRequest.method,
-        url: substitutedUrl,
+        url: activeRequest.url,
         params,
         headers,
         authType,
@@ -149,8 +134,6 @@ export default function Tester() {
           setRequest={setActiveRequest}
           onSend={sendRequest}
           toggleHistory={() => setShowHistory(!showHistory)}
-          envVars={envVars}
-          setEnvVars={setEnvVars}
         />
 
         <div className="flex flex-row h-full">

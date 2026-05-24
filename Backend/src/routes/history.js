@@ -33,8 +33,6 @@ router.get("/", requireAuth, async (req, res) => {
 });
 
 
-
-
 router.delete("/:id", requireAuth, async (req, res) => {
   const requestId = Number(req.params.id);
 
